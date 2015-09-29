@@ -10,66 +10,6 @@ _This is a fork of [VVV Apache](https://github.com/ericmann/vvv-apache) for [`tj
 
 [Vagrant](http://www.vagrantup.com) is a "tool for building and distributing development environments". It works with [virtualization](http://en.wikipedia.org/wiki/X86_virtualization) software such as [VirtualBox](https://www.virtualbox.org/) to provide a virtual machine that is sandboxed away from your local environment.
 
-### The First Vagrant Up
-
-1. Start with any operating system.
-1. Install [VirtualBox 4.2.x](https://www.virtualbox.org/wiki/Download_Old_Builds_4_2) or [VirtualBox 4.3.4](https://www.virtualbox.org/wiki/Downloads)
-    * Major portions of VirtualBox were rewritten for 4.3, and it's possible that there are still bugs to be shaken out. VVV is completely compatible with earlier versions of VirtualBox, so 4.2.18 or earlier would be just fine. Do note that Vagrant had specific issues with 4.2.16. Going as far back as 4.2.10 will likely be of no issue.
-    * VVV itself leans in the 4.3.x direction in the master branch to stay ahead of the curve.
-1. Install [Vagrant 1.4.0](http://www.vagrantup.com/downloads.html)
-    * `vagrant` will now be available as a command in your terminal, try it out.
-    * ***Note:*** If Vagrant is already installed, use `vagrant -v` to check the version. You may want to consider upgrading if a much older version is in use.
-    * ***Note:*** If VirtualBox 4.3.x is installed, Vagrant 1.3.5 or later is required.
-1. Install the [vagrant-hostsupdater](https://github.com/cogitatio/vagrant-hostsupdater) plugin with `vagrant plugin install vagrant-hostsupdater`
-    * Note: This step is not a requirement, though it does make the process of starting up a virtual machine nicer by automating the entries needed in your local machine's `hosts` file to access the provisioned VVV domains in your browser.
-    * If you choose not to install this plugin, a manual entry should be added to your local `hosts` file that looks like this: `192.168.50.4  vvv.dev local.wordpress.dev local.wordpress-trunk.dev src.wordpress-develop.dev build.wordpress-develop.dev`
-1. Clone or extract the Varying Vagrant Vagrants project into a local directory
-    * `git clone git://github.com/ericmann/vvv-apache.git vagrant-local`
-    * OR download and extract the repository master [zip file](https://github.com/ericmann/vvv-apache/archive/master.zip)
-    * OR grab a [stable release](https://github.com/ericmann/vvv-apache/releases) if you'd like some extra comfort.
-1. Change into the new directory with `cd vagrant-local`
-1. Start the Vagrant environment with `vagrant up`
-    * Be patient as the magic happens. This could take a while on the first run as your local machine downloads the required files.
-    * Watch as the script ends, as an administrator or `su` ***password may be required*** to properly modify the hosts file on your local machine.
-1. Visit any of the following default sites in your browser:
-    * [http://local.wordpress.dev/](http://local.wordpress.dev/) for WordPress stable
-    * [http://local.wordpress-trunk.dev/](http://local.wordpress-trunk.dev/) for WordPress trunk
-    * [http://src.wordpress-develop.dev/](http://src.wordpress-develop.dev/) for trunk WordPress development files
-    * [http://build.wordpress-develop.dev/](http://build.wordpress-develop.dev/) for the version of those development files built with Grunt
-    * [http://vvv.dev/](http://vvv.dev/) for a default dashboard containing several useful tools
-
-Fancy, yeah?
-
-### What Did That Do?
-
-The first time you run `vagrant up`, a packaged box containing a basic virtual machine is downloaded to your local machine and cached for future use. The file used by Varying Vagrant Vagrants contains an installation of Ubuntu 12.04 and is about 280MB.
-
-After this box is downloaded, it begins to boot as a sandboxed virtual machine using VirtualBox. Once booted, it runs the provisioning script included with VVV. This initiates the download and installation of around 100MB of packages on the new virtual machine.
-
-The time for all of this to happen depends a lot on the speed of your Internet connection. If you are on a fast cable connection, it will likely only take several minutes.
-
-On future runs of `vagrant up`, the packaged box will be cached on your local machine and Vagrant will only need to apply the requested provisioning.
-
-* ***Preferred:*** If the virtual machine has been powered off with `vagrant halt`, `vagrant up` will quickly power on the machine without provisioning.
-* ***Rare:*** If you would like to reapply the provisioning scripts with `vagrant up --provision` or `vagrant provision`, some time will be taken to check for updates and packages that have not been installed.
-* ***Very Rare:*** If the virtual machine has been destroyed with `vagrant destroy`, it will need to download the full 100MB of package data on the next `vagrant up`.
-
-### Now What?
-
-Now that you're up and running, start poking around and modifying things.
-
-1. Access the server via the command line with `vagrant ssh` from your `vagrant-local` directory. You can do almost anything you would do with a standard Ubuntu installation on a full server.
-    * **MS Windows users:** An SSH client is generally not distributed with Windows PCs by default. However, a terminal emulator such as [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html) will provide access immediately. For detailed instructions on connecting with PuTTY, consult the [VVV Wiki](https://github.com/10up/varying-vagrant-vagrants/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY).
-1. Power off the box with `vagrant halt` and turn it back on with `vagrant up`.
-1. Suspend the box's state in memory with `vagrant suspend` and bring it right back with `vagrant resume`.
-1. Reapply provisioning to a running box with `vagrant provision`.
-1. Destroy the box with `vagrant destroy`. Files added in the `www` directory will persist on the next `vagrant up`.
-1. Start modifying and adding local files to fit your needs. Take a look at [Auto Site Setup](https://github.com/10up/varying-vagrant-vagrants/wiki/Auto-site-Setup) for tips on adding new projects.
-
-#### Caveats
-
-The network configuration picks an IP of 192.168.50.4. This works if you are *not* on the 192.168.50.x sub domain, it could cause conflicts on your existing network if you *are* on a 192.168.50.x sub domain already. You can configure any IP address in the `Vagrantfile` and it will be used on the next `vagrant up`
-
 ### Credentials and Such
 
 #### MySQL Root
