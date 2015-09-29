@@ -1,46 +1,8 @@
-# Varying Vagrant Vagrants - Apache Edition
+# Theme Juice VVV
 
-Varying Vagrant Vagrants is an evolving [Vagrant](http://vagrantup.com) configuration focused on [WordPress](http://wordpress.org) development.
+_This is a fork of [VVV Apache](https://github.com/ericmann/vvv-apache) for [`tj`](https://github.com/ezekg/theme-juice-cli). Huge shoutout to the contributors on that project, as well as the original [Varying Vagrant Vagrants](https://github.com/Varying-Vagrant-Vagrants/VVV). The list of contributors as of this fork are below:_
 
-* **Version**: 1.0
 * **Contributors**: [@jeremyfelt](http://github.com/jeremyfelt), [@carldanley](http://github.com/carldanley), [@ericmann](http://github.com/ericmann), [@lkwdwrd](http://github.com/lkwdwrd), [@TheLastCicada](http://github.com/TheLastCicada), [@tddewey](http://github.com/tddewey), [@johnpbloch](http://github.com/johnpbloch), [@kadamwhite](http://github.com/kadamwhite), [@scribu](http://github.com/scribu), [@danielbachhuber](http://github.com/danielbachhuber), [@tollmanz](http://github.com/tollmanz), [@mbijon](http://github.com/mbijon), [@markjaquith](http://github.com/markjaquith), [@curtismchale](http://github.com/curtismchale), [@Mamaduka](http://github.com/mamaduka), [@lgedeon](http://github.com/lgedeon), [@pmgarman](http://github.com/pmgarman), [@westonruter](http://github.com/westonruter), [@petemall](http://github.com/petemall), [@cmmarslender](http://github.com/cmmarslender), [@mintindeed](http://github.com/mintindeed), [@mboynes](http://github.com/mboynes), [@aaronjorbin](http://github.com/aaronjorbin), [@tobiasbg](http://github.com/tobiasbg), [@simonwheatley](http://github.com/simonwheatley), [@ocean90](http://github.com/ocean90), [@lvnilesh](http://github.com/lvnilesh), [@alexw23](http://github.com/alexw23), [@zamoose](https://github.com/zamoose), [@leewillis77](https://github.com/leewillis77), [@imichaeli](https://github.com/imichaeli), [@andrezrv](https://github.com/andrezrv), [@cadwell](https://github.com/cadwell), [@cfoellmann](https://github.com/cfoellmann), [@westi](https://github.com/westi), [@ryanduff](https://github.com/ryanduff)
-* **Contributing**: Contributions are more than welcome. Please submit pull requests against the [master branch](https://github.com/10up/varying-vagrant-vagrants). Thanks!
-
-## Overview
-
-### The Purpose of Varying Vagrant Vagrants
-
-The primary goal of Varying Vagrant Vagrants (VVV) is to provide an approachable way for developers to begin working in a development environment that matches a production environment as closely as possible.
-
-The default server configuration provisioned by VVV is intended to match a common configuration for working with high traffic WordPress sites.
-
-The default WordPress configurations provided by VVV are intended to create an environment ideal for developing themes and plugins as well as for contributing to WordPress core.
-
-### How to Use Varying Vagrant Vagrants
-
-#### VVV as a MAMP/XAMPP Replacement
-
-VVV is ready to use as is. Download or clone VVV and then type `vagrant up` to automatically build a sandboxed Ubuntu server on your computer containing everything needed to contribute to WordPress core or develop a WordPress theme or plugin.
-
-Multiple projects can be developed at once in the same environment.
-
-* Use the `wordpress-develop` directory to participate in [WordPress core](http://core.trac.wordpress.org) development.
-* Use `wp-content/themes` in either the `wordpress-default` or `wordpress-trunk` directories to develop multiple themes.
-* Use `wp-content/plugins` in either the `wordpress-default` or `wordpress-trunk` directories to develop plugins.
-* Take advantage of VVV's [auto site configuration](https://github.com/10up/varying-vagrant-vagrants/wiki/Auto-site-Setup) to provision additional instances of WordPress in `/srv/www/`.
-
-#### VVV as a Scaffold
-
-Entirely different server configurations can be created by modifying the files included with VVV and through the use of additional [Auto Site Setup](https://github.com/10up/varying-vagrant-vagrants/wiki/Auto-site-Setup) provisioning scripts.
-
-It is not necessary to track the changes made to the main repository. Feel free to check this project out and then change everything to make it your own.
-
-### The Future of Varying Vagrant Vagrants
-
-Immediate goals for VVV include:
-
-* Continue to work towards a stable state of software and configuration included in the default provisioning.
-* Provide excellent and clear documentation throughout VVV to aid in both learning and scaffolding.
 
 ## Getting Started
 
@@ -109,24 +71,6 @@ Now that you're up and running, start poking around and modifying things.
 The network configuration picks an IP of 192.168.50.4. This works if you are *not* on the 192.168.50.x sub domain, it could cause conflicts on your existing network if you *are* on a 192.168.50.x sub domain already. You can configure any IP address in the `Vagrantfile` and it will be used on the next `vagrant up`
 
 ### Credentials and Such
-
-All database usernames and passwords for WordPress installations included by default are `wp` and `wp`.
-
-All WordPress admin usernames and passwords for WordPress installations included by default are `admin` and `password`.
-
-#### WordPress Stable
-* URL: `http://local.wordpress.dev`
-* DB Name: `wordpress_default`
-
-#### WordPress Trunk
-* URL: `http://local.wordpress-trunk.dev`
-* DB Name: `wordpress_trunk`
-
-#### WordPress Develop
-* /src URL: `http://src.wordpress-develop.dev`
-* /build URL: `http://build.wordpress-develop.dev`
-* DB Name: `wordpress_develop`
-* DB Name: `wordpress_unit_tests`
 
 #### MySQL Root
 * User: `root`
