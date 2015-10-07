@@ -18,9 +18,5 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-# Set the WP_TESTS_DIR path directory so that we can use phpunit inside
-# plugins almost immediately.
-export WP_TESTS_DIR=/srv/www/wordpress-develop/tests/phpunit/
-
 # add autocomplete for grunt
 eval "$(grunt --completion=bash)"
