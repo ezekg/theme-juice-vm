@@ -12,7 +12,9 @@ Vagrant.configure("2") do |config|
 
   # Configurations from 1.0.x can be placed in Vagrant 1.1.x specs like the following.
   config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--memory", 512]
+    v.customize ["modifyvm", :id, "--memory", 1024]
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   # Forward Agent
@@ -23,51 +25,39 @@ Vagrant.configure("2") do |config|
 
   # Default Ubuntu Box
   #
-  # This box is provided by Vagrant at vagrantup.com and is a nicely sized (290MB)
-  # box containing the Ubuntu 12.0.4 Precise 32 bit release. Once this box is downloaded
+  # This box is provided by Ubuntu vagrantcloud.com and is a nicely sized (332MB)
+  # box containing the Ubuntu 14.04 Trusty 64 bit release. Once this box is downloaded
   # to your host computer, it is cached for future use under the specified box name.
-  config.vm.box = "precise32"
-  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
-
+  config.vm.box = "ubuntu/trusty64"
   config.vm.hostname = "vvv"
 
   # Local Machine Hosts
   #
   # If the Vagrant plugin hostsupdater (https://github.com/cogitatio/vagrant-hostsupdater) is
   # installed, the following will automatically configure your local machine's hosts file to
-  # be aware of the domains specified below. Watch the provisioning script as you may be
-  # required to enter a password for Vagrant to access your hosts file.
+  # be aware of the domains specified below. Watch the provisioning script as you may need to
+  # enter a password for Vagrant to access your hosts file.
   #
-  # By default, we'll include the domains setup by VVV through the vvv-hosts file
+  # By default, we'll include the domains set up by VVV through the vvv-hosts file
   # located in the www/ directory.
   #
   # Other domains can be automatically added by including a vvv-hosts file containing
   # individual domains separated by whitespace in subdirectories of www/.
   if defined? VagrantPlugins::HostsUpdater
+    # Recursively fetch the paths to all vvv-hosts files under the www/ directory.
+    paths = Dir[File.join(vagrant_dir, "www", "**", "vvv-hosts")]
 
-    # Capture the paths to all vvv-hosts files under the www/ directory.
-    paths = []
-    Dir.glob(vagrant_dir + '/www/**/vvv-hosts').each do |path|
-      paths << path
-    end
+    # Parse the found vvv-hosts files for host names.
+    hosts = paths.map do |path|
+      # Read line from file and remove line breaks
+      lines = File.readlines(path).map(&:chomp)
+      # Filter out comments starting with "#"
+      lines.grep(/\A[^#]/)
+    end.flatten.uniq # Remove duplicate entries
 
-    # Parse through the vvv-hosts files in each of the found paths and put the hosts
-    # that are found into a single array.
-    hosts = []
-    paths.each do |path|
-      new_hosts = []
-      file_hosts = IO.read(path).split( "\n" )
-      file_hosts.each do |line|
-        if line[0..0] != "#"
-          new_hosts << line
-        end
-      end
-      hosts.concat new_hosts
-    end
-
-    # Pass the final hosts array to the hostsupdate plugin so it can perform magic.
+    # Pass the found host names to the hostsupdater plugin so it can perform magic.
     config.hostsupdater.aliases = hosts
-
+    config.hostsupdater.remove_on_suspend = true
   end
 
   # Default Box IP Address
@@ -97,10 +87,11 @@ Vagrant.configure("2") do |config|
   # This directory is used to maintain default database scripts as well as backed
   # up mysql dumps (SQL files) that are to be imported automatically on vagrant up
   config.vm.synced_folder "database/", "/srv/database"
+
   if vagrant_version >= "1.3.0"
     config.vm.synced_folder "database/data/", "/var/lib/mysql", :mount_options => [ "dmode=777", "fmode=777" ]
   else
-    config.vm.synced_folder "database/data/", "/var/lib/mysql", :extra => 'dmode=777,fmode=777'
+    config.vm.synced_folder "database/data/", "/var/lib/mysql", :extra => "dmode=777,fmode=777"
   end
 
   # /srv/config/
@@ -119,7 +110,7 @@ Vagrant.configure("2") do |config|
   if vagrant_version >= "1.3.0"
     config.vm.synced_folder "www/", "/srv/www/", :owner => "www-data", :mount_options => [ "dmode=775", "fmode=774" ]
   else
-    config.vm.synced_folder "www/", "/srv/www/", :owner => "www-data", :extra => 'dmode=775,fmode=774'
+    config.vm.synced_folder "www/", "/srv/www/", :owner => "www-data", :extra => "dmode=775,fmode=774"
   end
 
   # Customfile - POSSIBLY UNSTABLE
@@ -130,8 +121,8 @@ Vagrant.configure("2") do |config|
   #
   # Note that if you find yourself using a Customfile for anything crazy or specifying
   # different provisioning, then you may want to consider a new Vagrantfile entirely.
-  if File.exists?(File.join(vagrant_dir,'Customfile')) then
-    eval(IO.read(File.join(vagrant_dir,'Customfile')), binding)
+  if File.exist? File.join(vagrant_dir,"Customfile")
+    eval IO.read(File.join(vagrant_dir,"Customfile")), binding
   end
 
   # Provisioning
@@ -141,8 +132,8 @@ Vagrant.configure("2") do |config|
   # provison-pre.sh acts as a pre-hook to our default provisioning script. Anything that
   # should run before the shell commands laid out in provision.sh (or your provision-custom.sh
   # file) should go in this script. If it does not exist, no extra provisioning will run.
-  if File.exists?(File.join(vagrant_dir,'provision','provision-pre.sh')) then
-    config.vm.provision :shell, :path => File.join( "provision", "provision-pre.sh" )
+  if File.exist? File.join(vagrant_dir, "provision", "provision-pre.sh")
+    config.vm.provision :shell, :path => File.join("provision", "provision-pre.sh")
   end
 
   # provision.sh or provision-custom.sh
@@ -151,17 +142,44 @@ Vagrant.configure("2") do |config|
   # provision directory. If it is detected that a provision-custom.sh script has been
   # created, that is run as a replacement. This is an opportunity to replace the entirety
   # of the provisioning provided by default.
-  if File.exists?(File.join(vagrant_dir,'provision','provision-custom.sh')) then
-    config.vm.provision :shell, :path => File.join( "provision", "provision-custom.sh" )
+  if File.exist? File.join(vagrant_dir, "provision", "provision-custom.sh")
+    config.vm.provision :shell, :path => File.join("provision", "provision-custom.sh")
   else
-    config.vm.provision :shell, :path => File.join( "provision", "provision.sh" )
+    config.vm.provision :shell, :path => File.join("provision", "provision.sh")
   end
 
   # provision-post.sh acts as a post-hook to the default provisioning. Anything that should
   # run after the shell commands laid out in provision.sh or provision-custom.sh should be
   # put into this file. This provides a good opportunity to install additional packages
   # without having to replace the entire default provisioning script.
-  if File.exists?(File.join(vagrant_dir,'provision','provision-post.sh')) then
-    config.vm.provision :shell, :path => File.join( "provision", "provision-post.sh" )
+  if File.exist? File.join(vagrant_dir, "provision", "provision-post.sh")
+    config.vm.provision :shell, :path => File.join("provision", "provision-post.sh")
+  end
+
+  # Always start MySQL on boot, even when not running the full provisioner
+  # (run: "always" support added in 1.6.0)
+  if vagrant_version >= "1.6.0"
+    config.vm.provision :shell, inline: "sudo service mysql restart", run: "always"
+  end
+
+  # Vagrant Triggers
+  #
+  # If the vagrant-triggers plugin is installed, we can run various scripts on Vagrant
+  # state changes like `vagrant up`, `vagrant halt`, `vagrant suspend`, and `vagrant destroy`
+  #
+  # These scripts are run on the host machine, so we use `vagrant ssh` to tunnel back
+  # into the VM and execute things. By default, each of these scripts calls db_backup
+  # to create backups of all current databases. This can be overridden with custom
+  # scripting. See the individual files in config/homebin/ for details.
+  if defined? VagrantPlugins::Triggers
+    config.trigger.before :halt, :stdout => true do
+      run "vagrant ssh -c 'vagrant_halt'"
+    end
+    config.trigger.before :suspend, :stdout => true do
+      run "vagrant ssh -c 'vagrant_suspend'"
+    end
+    config.trigger.before :destroy, :stdout => true do
+      run "vagrant ssh -c 'vagrant_destroy'"
+    end
   end
 end
