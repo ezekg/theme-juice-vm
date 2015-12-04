@@ -193,10 +193,11 @@
     $status = $(".status");
     setInterval(function() {
       $.ajax("http://vvv.dev").done(function() {
-        $status.removeClass("status--loading");
         $status.addClass("status--ok");
       }).fail(function() {
         $status.addClass("status--err");
+      }).always(function() {
+        $status.removeClass("status--loading");
       });
     }, 2500);
   });
