@@ -33,7 +33,7 @@
 # BUT....
 
 # We do have some default site configs that should be included
-!/config/apache-config/sites/wordpress-default.conf
+!/config/apache-config/sites/default.conf
 
 # And we do have a default SQL file that should be included
 !/database/init.sql
