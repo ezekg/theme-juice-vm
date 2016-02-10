@@ -5,6 +5,6 @@
 user     = root
 password = root
 
-[mysqladmin] 
+[mysqladmin]
 user     = root
 password = root

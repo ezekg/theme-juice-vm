@@ -13,23 +13,27 @@ Vagrant.configure("2") do |config|
   # Configurations from 1.0.x can be placed in Vagrant 1.1.x specs like the following.
   config.vm.provider :virtualbox do |v|
     v.customize ["modifyvm", :id, "--memory", 1024]
+    v.customize ["modifyvm", :id, "--cpus", 1]
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+
+    # Set the box name in VirtualBox to match the working directory.
+    vvv_pwd = Dir.pwd
+    v.name  = File.basename(vvv_pwd)
   end
 
-  # Forward Agent
+  # SSH Agent Forwarding
   #
-  # Enable agent forwarding on vagrant ssh commands. This allows you to use identities
-  # established on the host machine inside the guest. See the manual for ssh-add
+  # Enable agent forwarding on vagrant ssh commands. This allows you to use ssh keys
+  # on your host machine inside the guest. See the manual for `ssh-add`.
   config.ssh.forward_agent = true
 
   # Default Ubuntu Box
   #
-  # This box is provided by Vagrant at vagrantup.com and is a nicely sized (290MB)
-  # box containing the Ubuntu 12.0.4 Precise 32 bit release. Once this box is downloaded
+  # This box is provided by Ubuntu vagrantcloud.com and is a nicely sized (332MB)
+  # box containing the Ubuntu 14.04 Trusty 64 bit release. Once this box is downloaded
   # to your host computer, it is cached for future use under the specified box name.
-  config.vm.box = "precise32"
-  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.box = "ubuntu/trusty64"
 
   config.vm.hostname = "vvv"
 
@@ -62,16 +66,21 @@ Vagrant.configure("2") do |config|
     config.hostsupdater.remove_on_suspend = true
   end
 
-  # Default Box IP Address
+  # Private Network (default)
   #
-  # This is the IP address that your host will communicate to the guest through. In the
-  # case of the default `192.168.50.4` that we've provided, VirtualBox will setup another
-  # network adapter on your host machine with the IP `192.168.50.1` as a gateway.
+  # A private network is created by default. This is the IP address through which your
+  # host machine will communicate to the guest. In this default configuration, the virtual
+  # machine will have an IP address of 192.168.50.4 and a virtual network adapter will be
+  # created on your host machine with the IP of 192.168.50.1 as a gateway.
   #
-  # If you are already on a network using the 192.168.50.x subnet, this should be changed.
-  # If you are running more than one VM through VirtualBox, different subnets should be used
-  # for those as well. This includes other Vagrant boxes.
-  config.vm.network :private_network, ip: "192.168.50.4"
+  # Access to the guest machine is only available to your local host. To provide access to
+  # other devices, a public network should be configured or port forwarding enabled.
+  #
+  # Note: If your existing network is using the 192.168.50.x subnet, this default IP address
+  # should be changed. If more than one VM is running through VirtualBox, including other
+  # Vagrant machines, different subnets should be used for each.
+  #
+  config.vm.network :private_network, :id => "vvv_primary", :ip => "192.168.50.4"
 
   # Drive mapping
   #
@@ -90,10 +99,25 @@ Vagrant.configure("2") do |config|
   # up mysql dumps (SQL files) that are to be imported automatically on vagrant up
   config.vm.synced_folder "database/", "/srv/database"
 
-  if vagrant_version >= "1.3.0"
-    config.vm.synced_folder "database/data/", "/var/lib/mysql", :mount_options => ["dmode=777", "fmode=777"]
-  else
-    config.vm.synced_folder "database/data/", "/var/lib/mysql", :extra => "dmode=777,fmode=777"
+  # If the mysql_upgrade_info file from a previous persistent database mapping is detected,
+  # we'll continue to map that directory as /var/lib/mysql inside the virtual machine. Once
+  # this file is changed or removed, this mapping will no longer occur. A db_backup command
+  # is now available inside the virtual machine to backup all databases for future use. This
+  # command is automatically issued on halt, suspend, and destroy if the vagrant-triggers
+  # plugin is installed.
+  if File.exists?(File.join(vagrant_dir,'database/data/mysql_upgrade_info')) then
+    if vagrant_version >= "1.3.0"
+      config.vm.synced_folder "database/data/", "/var/lib/mysql", :mount_options => [ "dmode=777", "fmode=777" ]
+    else
+      config.vm.synced_folder "database/data/", "/var/lib/mysql", :extra => 'dmode=777,fmode=777'
+    end
+
+    # The Parallels Provider does not understand "dmode"/"fmode" in the "mount_options" as
+    # those are specific to Virtualbox. The folder is therefore overridden with one that
+    # uses corresponding Parallels mount options.
+    config.vm.provider :parallels do |v, override|
+      override.vm.synced_folder "database/data/", "/var/lib/mysql", :mount_options => []
+    end
   end
 
   # /srv/config/
@@ -103,6 +127,12 @@ Vagrant.configure("2") do |config|
   # This directory is currently used to maintain various config files for php and
   # Apache as well as any pre-existing database files.
   config.vm.synced_folder "config/", "/srv/config"
+
+  # /srv/log/
+  #
+  # If a log directory exists in the same directory as your Vagrantfile, a mapped
+  # directory inside the VM will be created for some generated log files.
+  config.vm.synced_folder "log/", "/srv/log", :owner => "www-data"
 
   # /srv/www/
   #
@@ -123,8 +153,8 @@ Vagrant.configure("2") do |config|
   #
   # Note that if you find yourself using a Customfile for anything crazy or specifying
   # different provisioning, then you may want to consider a new Vagrantfile entirely.
-  if File.exist? File.join(vagrant_dir,"Customfile")
-    eval IO.read(File.join(vagrant_dir,"Customfile")), binding
+  if File.exist? File.join(vagrant_dir, "Customfile")
+    eval IO.read(File.join(vagrant_dir, "Customfile")), binding
   end
 
   # Provisioning
@@ -134,8 +164,8 @@ Vagrant.configure("2") do |config|
   # provison-pre.sh acts as a pre-hook to our default provisioning script. Anything that
   # should run before the shell commands laid out in provision.sh (or your provision-custom.sh
   # file) should go in this script. If it does not exist, no extra provisioning will run.
-  if File.exist? File.join(vagrant_dir, "provision", "provision-pre.sh")
-    config.vm.provision :shell, :path => File.join("provision", "provision-pre.sh")
+  if File.exists?(File.join(vagrant_dir,'provision','provision-pre.sh')) then
+    config.vm.provision :shell, :path => File.join( "provision", "provision-pre.sh" )
   end
 
   # provision.sh or provision-custom.sh
@@ -144,25 +174,27 @@ Vagrant.configure("2") do |config|
   # provision directory. If it is detected that a provision-custom.sh script has been
   # created, that is run as a replacement. This is an opportunity to replace the entirety
   # of the provisioning provided by default.
-  if File.exist? File.join(vagrant_dir, "provision", "provision-custom.sh")
-    config.vm.provision :shell, :path => File.join("provision", "provision-custom.sh")
+  if File.exists?(File.join(vagrant_dir,'provision','provision-custom.sh')) then
+    config.vm.provision :shell, :path => File.join( "provision", "provision-custom.sh" )
   else
-    config.vm.provision :shell, :path => File.join("provision", "provision.sh")
+    config.vm.provision :shell, :path => File.join( "provision", "provision.sh" )
   end
 
   # provision-post.sh acts as a post-hook to the default provisioning. Anything that should
   # run after the shell commands laid out in provision.sh or provision-custom.sh should be
   # put into this file. This provides a good opportunity to install additional packages
   # without having to replace the entire default provisioning script.
-  if File.exist? File.join(vagrant_dir, "provision", "provision-post.sh")
-    config.vm.provision :shell, :path => File.join("provision", "provision-post.sh")
+  if File.exists?(File.join(vagrant_dir,'provision','provision-post.sh')) then
+    config.vm.provision :shell, :path => File.join( "provision", "provision-post.sh" )
   end
 
   # Always start MySQL on boot, even when not running the full provisioner
   # (run: "always" support added in 1.6.0)
   if vagrant_version >= "1.6.0"
     config.vm.provision :shell, inline: "sudo service mysql restart", run: "always"
+    config.vm.provision :shell, inline: "sudo service apache2 restart", run: "always"
   end
+
 
   # Vagrant Triggers
   #
