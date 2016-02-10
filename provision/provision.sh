@@ -120,33 +120,33 @@ noroot() {
 
 profile_setup() {
   # Copy custom dotfiles and bin file for the vagrant user from local
-  cp "/srv/config/bash_profile" "/home/vagrant/.bash_profile"
-  cp "/srv/config/bash_aliases" "/home/vagrant/.bash_aliases"
-  cp "/srv/config/vimrc" "/home/vagrant/.vimrc"
+  sudo rsync -rvzh "/srv/config/bash_profile" "/home/vagrant/.bash_profile"
+  sudo rsync -rvzh "/srv/config/bash_aliases" "/home/vagrant/.bash_aliases"
+  sudo rsync -rvzh "/srv/config/vimrc" "/home/vagrant/.vimrc"
 
   if [[ ! -d "/home/vagrant/.subversion" ]]; then
     mkdir "/home/vagrant/.subversion"
   fi
 
-  cp "/srv/config/subversion-servers" "/home/vagrant/.subversion/servers"
+  sudo rsync -rvzh "/srv/config/subversion-servers" "/home/vagrant/.subversion/servers"
 
   if [[ ! -d "/home/vagrant/bin" ]]; then
     mkdir "/home/vagrant/bin"
   fi
 
-  rsync -rvzh --delete "/srv/config/homebin/" "/home/vagrant/bin/"
+  sudo rsync -rvzh --delete "/srv/config/homebin/" "/home/vagrant/bin/"
   sudo chmod +x /home/vagrant/bin/*
 
-  echo " * Copied /srv/config/bash_profile                      to /home/vagrant/.bash_profile"
-  echo " * Copied /srv/config/bash_aliases                      to /home/vagrant/.bash_aliases"
-  echo " * Copied /srv/config/vimrc                             to /home/vagrant/.vimrc"
-  echo " * Copied /srv/config/subversion-servers                to /home/vagrant/.subversion/servers"
-  echo " * rsync'd /srv/config/homebin                          to /home/vagrant/bin"
+  echo " * /srv/config/bash_profile                        -> /home/vagrant/.bash_profile"
+  echo " * /srv/config/bash_aliases                        -> /home/vagrant/.bash_aliases"
+  echo " * /srv/config/vimrc                               -> /home/vagrant/.vimrc"
+  echo " * /srv/config/subversion-servers                  -> /home/vagrant/.subversion/servers"
+  echo " * /srv/config/homebin                             -> /home/vagrant/bin"
 
   # If a bash_prompt file exists in the VVV config/ directory, copy to the VM.
   if [[ -f "/srv/config/bash_prompt" ]]; then
-    cp "/srv/config/bash_prompt" "/home/vagrant/.bash_prompt"
-    echo " * Copied /srv/config/bash_prompt to /home/vagrant/.bash_prompt"
+    sudo rsync -rvzh "/srv/config/bash_prompt" "/home/vagrant/.bash_prompt"
+    echo " * /srv/config/bash_prompt                          -> /home/vagrant/.bash_prompt"
   fi
 }
 
@@ -319,16 +319,18 @@ tools_install() {
 
 apache_setup() {
   # Used to to ensure proper services are started on `vagrant up`
-  cp /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
+  sudo rsync -rvzh /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
 
-  echo " * /srv/config/init/vvv-start.conf               -> /etc/init/vvv-start.conf"
+  echo " * /srv/config/init/vvv-start.conf                -> /etc/init/vvv-start.conf"
 
   # Copy Apache configuration from local
-  cp /srv/config/apache-config/apache2.conf /etc/apache2/apache2.conf
-  cp /srv/config/apache-config/php5-fpm.conf /etc/apache2/conf.d/php5-fpm.conf
-  rsync -rvzh --delete /srv/config/apache-config/sites/ /etc/apache2/custom-sites/
+  sudo rsync -rvzh "/srv/config/apache-config/apache2.conf" "/etc/apache2/apache2.conf"
+  sudo rsync -rvzh "/srv/config/apache-config/httpd.conf" "/etc/apache2/httpd.conf"
+  sudo rsync -rvzh "/srv/config/apache-config/php5-fpm.conf" "/etc/apache2/conf.d/php5-fpm.conf"
+  sudo rsync -rvzh --delete "/srv/config/apache-config/sites/" "/etc/apache2/custom-sites/"
 
   echo " * /srv/config/apache-config/apache2.conf         -> /etc/apache2/apache2.conf"
+  echo " * /srv/config/apache-config/httpd.conf           -> /etc/apache2/httpd.conf"
   echo " * /srv/config/apache-config/php-fpm.conf         -> /etc/apache2/conf.d/php-fpm.conf"
   echo " * /srv/config/apache-config/sites/               -> /etc/apache2/custom-sites/"
 
@@ -340,27 +342,29 @@ apache_setup() {
 }
 
 phpfpm_setup() {
+  sudo mkdir -p "/etc/php5/fpm/pool.d" "/etc/php5/fpm/conf.d/"
+
   # Copy php-fpm configuration from local
-  cp "/srv/config/php5-fpm-config/php5-fpm.conf" "/etc/php5/fpm/php5-fpm.conf"
-  cp "/srv/config/php5-fpm-config/www.conf" "/etc/php5/fpm/pool.d/www.conf"
-  cp "/srv/config/php5-fpm-config/php-custom.ini" "/etc/php5/fpm/conf.d/php-custom.ini"
-  cp "/srv/config/php5-fpm-config/opcache.ini" "/etc/php5/fpm/conf.d/opcache.ini"
-  cp "/srv/config/php5-fpm-config/xdebug.ini" "/etc/php5/mods-available/xdebug.ini"
+  sudo rsync -rvzh "/srv/config/php5-fpm-config/php5-fpm.conf" "/etc/php5/fpm/php5-fpm.conf"
+  sudo rsync -rvzh "/srv/config/php5-fpm-config/www.conf" "/etc/php5/fpm/pool.d/www.conf"
+  sudo rsync -rvzh "/srv/config/php5-fpm-config/php-custom.ini" "/etc/php5/fpm/conf.d/php-custom.ini"
+  sudo rsync -rvzh "/srv/config/php5-fpm-config/opcache.ini" "/etc/php5/fpm/conf.d/opcache.ini"
+  sudo rsync -rvzh "/srv/config/php5-fpm-config/xdebug.ini" "/etc/php5/mods-available/xdebug.ini"
 
   # Find the path to Xdebug and prepend it to xdebug.ini
   XDEBUG_PATH=$( find /usr -name 'xdebug.so' | head -1 )
   sed -i "1izend_extension=\"$XDEBUG_PATH\"" "/etc/php5/mods-available/xdebug.ini"
 
-  echo " * Copied /srv/config/php5-fpm-config/php5-fpm.conf     to /etc/php5/fpm/php5-fpm.conf"
-  echo " * Copied /srv/config/php5-fpm-config/www.conf          to /etc/php5/fpm/pool.d/www.conf"
-  echo " * Copied /srv/config/php5-fpm-config/php-custom.ini    to /etc/php5/fpm/conf.d/php-custom.ini"
-  echo " * Copied /srv/config/php5-fpm-config/opcache.ini       to /etc/php5/fpm/conf.d/opcache.ini"
-  echo " * Copied /srv/config/php5-fpm-config/xdebug.ini        to /etc/php5/mods-available/xdebug.ini"
+  echo " * /srv/config/php5-fpm-config/php5-fpm.conf       -> /etc/php5/fpm/php5-fpm.conf"
+  echo " * /srv/config/php5-fpm-config/www.conf            -> /etc/php5/fpm/pool.d/www.conf"
+  echo " * /srv/config/php5-fpm-config/php-custom.ini      -> /etc/php5/fpm/conf.d/php-custom.ini"
+  echo " * /srv/config/php5-fpm-config/opcache.ini         -> /etc/php5/fpm/conf.d/opcache.ini"
+  echo " * /srv/config/php5-fpm-config/xdebug.ini          -> /etc/php5/mods-available/xdebug.ini"
 
   # Copy memcached configuration from local
-  cp "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
+  sudo rsync -rvzh "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
 
-  echo " * Copied /srv/config/memcached-config/memcached.conf   to /etc/memcached.conf"
+  echo " * /srv/config/memcached-config/memcached.conf     -> /etc/memcached.conf"
 }
 
 mysql_setup() {
@@ -372,11 +376,11 @@ mysql_setup() {
     echo -e "\nSetup MySQL configuration file links..."
 
     # Copy mysql configuration from local
-    cp "/srv/config/mysql-config/my.cnf" "/etc/mysql/my.cnf"
-    cp "/srv/config/mysql-config/root-my.cnf" "/home/vagrant/.my.cnf"
+    sudo rsync -rvzh "/srv/config/mysql-config/my.cnf" "/etc/mysql/my.cnf"
+    sudo rsync -rvzh "/srv/config/mysql-config/root-my.cnf" "/home/vagrant/.my.cnf"
 
-    echo " * Copied /srv/config/mysql-config/my.cnf               to /etc/mysql/my.cnf"
-    echo " * Copied /srv/config/mysql-config/root-my.cnf          to /home/vagrant/.my.cnf"
+    echo " * /srv/config/mysql-config/my.cnf                 -> /etc/mysql/my.cnf"
+    echo " * /srv/config/mysql-config/root-my.cnf            -> /home/vagrant/.my.cnf"
 
     # MySQL gives us an error if we restart a non running service, which
     # happens after a `vagrant halt`. Check to see if it's running before
@@ -454,15 +458,15 @@ mailcatcher_setup() {
   if [[ -f "/etc/init/mailcatcher.conf" ]]; then
     echo " *" Mailcatcher upstart already configured.
   else
-    cp "/srv/config/init/mailcatcher.conf"  "/etc/init/mailcatcher.conf"
-    echo " * Copied /srv/config/init/mailcatcher.conf    to /etc/init/mailcatcher.conf"
+    sudo rsync -rvzh "/srv/config/init/mailcatcher.conf"  "/etc/init/mailcatcher.conf"
+    echo " * /srv/config/init/mailcatcher.conf               -> /etc/init/mailcatcher.conf"
   fi
 
   if [[ -f "/etc/php5/mods-available/mailcatcher.ini" ]]; then
     echo " *" Mailcatcher php5 fpm already configured.
   else
-    cp "/srv/config/php5-fpm-config/mailcatcher.ini" "/etc/php5/mods-available/mailcatcher.ini"
-    echo " * Copied /srv/config/php5-fpm-config/mailcatcher.ini    to /etc/php5/mods-available/mailcatcher.ini"
+    sudo rsync -rvzh "/srv/config/php5-fpm-config/mailcatcher.ini" "/etc/php5/mods-available/mailcatcher.ini"
+    echo " * /srv/config/php5-fpm-config/mailcatcher.ini     -> /etc/php5/mods-available/mailcatcher.ini"
   fi
 }
 
@@ -471,7 +475,7 @@ services_restart() {
   #
   # Make sure the services we expect to be running are running.
   echo -e "\nRestart services..."
-  service apache2 restart
+  sudo a2enmod headers && sudo service apache2 restart
   service memcached restart
   service mailcatcher restart
 
@@ -562,7 +566,8 @@ phpmyadmin_setup() {
   else
     echo "PHPMyAdmin already installed."
   fi
-  cp "/srv/config/phpmyadmin-config/config.inc.php" "/srv/www/default/database-admin/"
+  sudo rsync -rvzh "/srv/config/phpmyadmin-config/config.inc.php" "/srv/www/default/database-admin/"
+  echo " * /srv/config/phpmyadmin-config/config.inc.php    -> /srv/www/default/database-admin/"
 }
 
 custom_vvv(){
