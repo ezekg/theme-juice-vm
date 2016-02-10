@@ -489,10 +489,6 @@ services_restart() {
   php5enmod mailcatcher
 
   service php5-fpm restart
-
-  # Add the vagrant user to the www-data group so that it has better access
-  # to PHP and Apache related files.
-  usermod -a -G www-data vagrant
 }
 
 wp_cli() {
@@ -653,7 +649,6 @@ wp_cli
 memcached_admin
 opcached_status
 webgrind_install
-php_codesniff
 phpmyadmin_setup
 
 network_check
