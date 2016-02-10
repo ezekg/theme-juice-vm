@@ -21,7 +21,7 @@ _This is a fork of [VVV Apache](https://github.com/ericmann/vvv-apache) for [`tj
 
 A bunch of stuff!
 
-1. [Ubuntu](http://www.ubuntu.com/) 12.04 LTS (Precise Pangolin)
+1. [Ubuntu](http://www.ubuntu.com/) 14.04.3 LTS (Trusty Tahr)
 1. [WP-CLI](http://wp-cli.org/)
 1. [Apache](http://httpd.apache.org/) 2.4.x
 1. [mysql](http://www.mysql.com/) 5.5.x
