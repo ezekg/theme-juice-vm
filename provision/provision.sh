@@ -463,7 +463,7 @@ mailcatcher_setup() {
   fi
 
   if [[ -f "/etc/php5/mods-available/mailcatcher.ini" ]]; then
-    echo " *" Mailcatcher php5 fpm already configured.
+    echo " * Mailcatcher php5 fpm already configured."
   else
     sudo rsync -rvzh "/srv/config/php5-fpm-config/mailcatcher.ini" "/etc/php5/mods-available/mailcatcher.ini"
     echo " * /srv/config/php5-fpm-config/mailcatcher.ini     -> /etc/php5/mods-available/mailcatcher.ini"
