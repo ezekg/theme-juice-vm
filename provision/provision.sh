@@ -465,7 +465,6 @@ services_restart() {
   sudo sed -i 's/APACHE_RUN_USER=www-data/APACHE_RUN_USER=vagrant/' /etc/apache2/envvars
   sudo chown -R vagrant:www-data /var/lock/apache2/
   sudo chown -R vagrant:www-data /var/lib/apache2/
-  source /etc/apache2/envvars
 
   # Make sure the services we expect to be running are running.
   echo -e "\nRestart services..."
