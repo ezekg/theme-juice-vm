@@ -193,37 +193,9 @@ package_install() {
   # Disable ipv6 as some ISPs/mail servers have problems with it
   echo "inet_protocols = ipv4" >> "/etc/postfix/main.cf"
 
-  # # Provide our custom apt sources before running `apt-get update`
-  # ln -sf /srv/config/apt-source-append.list /etc/apt/sources.list.d/vvv-sources.list
-  # echo "Linked custom apt sources"
-
   if [[ ${#apt_package_install_list[@]} = 0 ]]; then
     echo -e "No apt packages to install.\n"
   else
-    # Before running `apt-get update`, we should add the public keys for
-    # the packages that we are installing from non standard sources via
-    # our appended apt source.list
-
-    # # Launchpad Subversion key EAA903E3A2F4C039
-		# gpg -q --keyserver "hkp://keyserver.ubuntu.com:80" --recv-key EAA903E3A2F4C039
-		# gpg -q -a --export EAA903E3A2F4C039 | apt-key add -
-    #
-		# # Launchpad PHP key 4F4EA0AAE5267A6C
-		# gpg -q --keyserver "hkp://keyserver.ubuntu.com:80" --recv-key 4F4EA0AAE5267A6C
-		# gpg -q -a --export 4F4EA0AAE5267A6C | apt-key add -
-    #
-		# # Launchpad git key A1715D88E1DF1F24
-		# gpg -q --keyserver "hkp://keyserver.ubuntu.com:80" --recv-key A1715D88E1DF1F24
-		# gpg -q -a --export A1715D88E1DF1F24 | apt-key add -
-    #
-		# # Launchpad nodejs key C7917B12
-		# gpg -q --keyserver "hkp://keyserver.ubuntu.com:80" --recv-key C7917B12
-		# gpg -q -a --export C7917B12 | apt-key add -
-
-    # # Apply the nodejs assigning key
-    # apt-key adv --quiet --keyserver "hkp://keyserver.ubuntu.com:80" --recv-key C7917B12 2>&1 | grep "gpg:"
-    # apt-key export C7917B12 | apt-key add -
-
     # Update all of the package references before installing anything
     echo "Running apt-get update..."
     apt-get update -y
@@ -489,6 +461,10 @@ services_restart() {
   php5enmod mailcatcher
 
   service php5-fpm restart
+
+  # Add the vagrant user to the www-data group so that it has better access
+  # to PHP and Apache related files
+  sudo usermod -a -G www-data vagrant
 }
 
 wp_cli() {
