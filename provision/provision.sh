@@ -317,7 +317,7 @@ apache_setup() {
 
   # Create php5.fcgi and give the webserver permission to use it
   sudo touch /usr/lib/cgi-bin/php5.fcgi
-  sudo chown -R www-data:www-data /usr/lib/cgi-bin
+  sudo chown -R vagrant:www-data /usr/lib/cgi-bin
 
   # Enable the php5-fpm conf
   sudo a2enconf php5-fpm
