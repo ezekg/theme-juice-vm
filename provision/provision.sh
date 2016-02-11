@@ -458,6 +458,15 @@ mailcatcher_setup() {
 services_restart() {
   # RESTART SERVICES
   #
+  # Add the vagrant user to the www-data group so that it has better access
+  # to PHP and Apache related files
+  sudo usermod -a -G www-data vagrant
+  sudo chown -R vagrant:www-data /tmp
+  sudo sed -i 's/APACHE_RUN_USER=www-data/APACHE_RUN_USER=vagrant/' /etc/apache2/envvars
+  sudo chown -R vagrant:www-data /var/lock/apache2/
+  sudo chown -R vagrant:www-data /var/lib/apache2/
+  source /etc/apache2/envvars
+
   # Make sure the services we expect to be running are running.
   echo -e "\nRestart services..."
   sudo a2enmod headers && sudo service apache2 restart
@@ -474,13 +483,6 @@ services_restart() {
   php5enmod mailcatcher
 
   sudo service php5-fpm restart
-
-  # Add the vagrant user to the www-data group so that it has better access
-  # to PHP and Apache related files
-  sudo usermod -a -G www-data vagrant
-
-  # Fix issue where Apache/PHP aren't allowed to write to the /tmp dir
-  sudo chown -R www-data:www-data /tmp
 }
 
 wp_cli() {

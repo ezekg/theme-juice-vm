@@ -127,14 +127,14 @@ Vagrant.configure("2") do |config|
   #
   # If a log directory exists in the same directory as your Vagrantfile, a mapped
   # directory inside the VM will be created for some generated log files.
-  config.vm.synced_folder "log/", "/srv/log", :owner => "www-data", :group => "www-data"
+  config.vm.synced_folder "log/", "/srv/log", :owner => "vagrant", :group => "www-data"
 
   # /srv/www/
   #
   # If a www directory exists in the same directory as your Vagrantfile, a mapped directory
   # inside the VM will be created that acts as the default location for Apache sites. Put all
   # of your project files here that you want to access through the web server
-  config.vm.synced_folder "www/", "/srv/www/", :owner => "www-data", :group => "www-data", :mount_options => ["dmode=777", "fmode=777"]
+  config.vm.synced_folder "www/", "/srv/www/", :owner => "vagrant", :group => "www-data", :mount_options => ["dmode=777", "fmode=777"]
 
   # Customfile - POSSIBLY UNSTABLE
   #
