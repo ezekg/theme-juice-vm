@@ -1,0 +1,8 @@
+#
+# Additional sources will be added here to help control the
+# versions of various packages that are installed
+#
+deb http://us.archive.ubuntu.com/ubuntu/ trusty multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ trusty multiverse
+deb http://us.archive.ubuntu.com/ubuntu/ trusty-updates multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ trusty-updates multiverse

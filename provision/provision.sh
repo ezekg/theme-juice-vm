@@ -25,24 +25,26 @@ apt_package_install_list=()
 # status before adding them to the apt_package_install_list array.
 apt_package_check_list=(
 
-  # PHP5
-  #
-  # Our base packages for php5.
-  php5
+	# Our base packages for php5
+	php5-fpm
+	php5-cli
 
-  # Common and dev packages for php
-  php5-common
-  php5-dev
+	# Common and dev packages for php
+	php5-common
+	php5-dev
 
-  # Extra PHP modules that we find useful
-  php5-memcache
-  php5-imagick
-  php5-mcrypt
-  php5-mysql
-  php5-imap
-  php5-curl
-  php-pear
-  php5-gd
+	# Extra PHP modules that we find useful
+	php5-memcache
+	php5-imagick
+	php5-xdebug
+	php5-mcrypt
+	php5-mysql
+	php5-imap
+	php5-curl
+	php-pear
+	php5-gd
+	php-apc
+	php5
 
   # Apache is installed as the default web server
 	apache2-mpm-worker
@@ -193,6 +195,10 @@ package_install() {
   # Disable ipv6 as some ISPs/mail servers have problems with it
   echo "inet_protocols = ipv4" >> "/etc/postfix/main.cf"
 
+  # Provide our custom apt sources before running `apt-get update`
+  ln -sf /srv/config/apt-sources.list /etc/apt/sources.list.d/vvv-sources.list
+  echo "Linked custom apt sources"
+
   if [[ ${#apt_package_install_list[@]} = 0 ]]; then
     echo -e "No apt packages to install.\n"
   else
@@ -298,16 +304,23 @@ apache_setup() {
   # Copy Apache configuration from local
   sudo rsync -rvzh "/srv/config/apache-config/apache2.conf" "/etc/apache2/apache2.conf"
   sudo rsync -rvzh "/srv/config/apache-config/httpd.conf" "/etc/apache2/httpd.conf"
-  sudo rsync -rvzh "/srv/config/apache-config/php5-fpm.conf" "/etc/apache2/conf.d/php5-fpm.conf"
+  sudo rsync -rvzh "/srv/config/apache-config/php5-fpm.conf" "/etc/apache2/conf-enabled/php5-fpm.conf"
   sudo rsync -rvzh --delete "/srv/config/apache-config/sites/" "/etc/apache2/custom-sites/"
 
   echo " * /srv/config/apache-config/apache2.conf         -> /etc/apache2/apache2.conf"
   echo " * /srv/config/apache-config/httpd.conf           -> /etc/apache2/httpd.conf"
-  echo " * /srv/config/apache-config/php-fpm.conf         -> /etc/apache2/conf.d/php-fpm.conf"
+  echo " * /srv/config/apache-config/php5-fpm.conf        -> /etc/apache2/conf-enabled/php5-fpm.conf"
   echo " * /srv/config/apache-config/sites/               -> /etc/apache2/custom-sites/"
 
   # Configure Apache for PHP-FPM
-  a2enmod actions fastcgi alias
+  sudo a2enmod actions fastcgi alias
+
+  # Create php5.fcgi and give the webserver permission to use it
+  sudo touch /usr/lib/cgi-bin/php5.fcgi
+  sudo chown -R www-data:www-data /usr/lib/cgi-bin
+
+  # Enable the php5-fpm conf
+  sudo a2enconf php5-fpm
 
   # Enable mod_rewrite
   a2enmod rewrite
@@ -448,8 +461,8 @@ services_restart() {
   # Make sure the services we expect to be running are running.
   echo -e "\nRestart services..."
   sudo a2enmod headers && sudo service apache2 restart
-  service memcached restart
-  service mailcatcher restart
+  sudo service memcached restart
+  sudo service mailcatcher restart
 
   # Disable PHP Xdebug module by default
   php5dismod xdebug
@@ -460,11 +473,14 @@ services_restart() {
   # Enable PHP mailcatcher sendmail settings by default
   php5enmod mailcatcher
 
-  service php5-fpm restart
+  sudo service php5-fpm restart
 
   # Add the vagrant user to the www-data group so that it has better access
   # to PHP and Apache related files
   sudo usermod -a -G www-data vagrant
+
+  # Fix issue where Apache/PHP aren't allowed to write to the /tmp dir
+  sudo chown -R www-data:www-data /tmp
 }
 
 wp_cli() {
