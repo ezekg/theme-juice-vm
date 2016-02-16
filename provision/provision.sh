@@ -422,8 +422,9 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
-if [[ ! "$VERSION" =~ ^[0-9]\.[0-9](\.[0-9])?$ ]]; then
-  echo "Invalid PHP version: $VERSION (should be x.x(.x)?)"
+if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "Invalid PHP version: $VERSION (should be x.x.x)"
+  phpbrew known
   exit 1
 fi
 
