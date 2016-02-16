@@ -61,7 +61,8 @@ php-switch 5.6.18 -y
 After that, provision the VM with `vagrant provision`. Bam! That easy!
 
 _Currently, this feature is limited to **only** PHP `5.x`. I haven't been able
-to find a way to consistently configure other versions with Apache/MySQL._
+to find a way to consistently configure other versions with Apache/MySQL. If
+you have the chops, I'd love the help._
 
 ### Need Help?
 
