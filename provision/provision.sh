@@ -447,7 +447,7 @@ if [[ ! -f "$SOFILE" ]]; then
   fi
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    sudo -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock
+    sudo -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-config-file-scan-dir=/etc/php5/apache2/conf.d/
   else
     exit 1
   fi
