@@ -392,8 +392,9 @@ php_setup() {
   #
   # Install or update phpbrew based on current state.
   if [[ "$(phpbrew --version)" ]]; then
+    # Update as vagrant user
     echo "Updating phpbrew..."
-    phpbrew self-update
+    sudo -i -u vagrant phpbrew self-update
   else
     echo "Installing phpbrew..."
     curl -L -O "https://github.com/phpbrew/phpbrew/raw/master/phpbrew"
@@ -441,8 +442,7 @@ if [[ ! -f "$SOFILE" ]]; then
 
   read -p "Do you want to install it? (y/N) " -r
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2
-    phpbrew install "php-$VERSION" +default +mysql +debug +cgi
+    phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock
   else
     exit 1
   fi
@@ -450,9 +450,12 @@ fi
 
 echo "Switching PHP version to $VERSION..."
 phpbrew switch "$VERSION"
+
+echo "Updating contents of $SOFILE to point to PHP version $VERSION..."
 FILECONTENTS="LoadModule php5_module $SOFILE"
 echo "$FILECONTENTS" > "$CONFFILE"
-echo "Updated $CONFFILE"
+
+echo "Restarting Apache..."
 sudo service apache2 restart
 EOT
     chmod +x "/usr/local/bin/php-switch"
