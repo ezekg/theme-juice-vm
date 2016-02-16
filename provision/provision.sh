@@ -26,7 +26,7 @@ apt_package_install_list=()
 apt_package_check_list=(
 
 	# Our base packages for php5
-	# php5-fpm
+  php5
 	php5-cli
 
 	# Common and dev packages for php
@@ -44,7 +44,6 @@ apt_package_check_list=(
 	php-pear
 	php5-gd
 	php-apc
-	php5
 
   # Dependencies for building PHP versions with phpbrew
   autoconf
@@ -360,7 +359,6 @@ if [[ ! -f "$SOFILE" ]]; then
   read -p "Do you want to install it? (y/N) " -r
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2
-    # phpbrew install "php-$VERSION" +default +mysql +debug +fpm
     phpbrew install "php-$VERSION" +default +mysql +debug +cgi
   else
     exit 1
@@ -424,24 +422,14 @@ apache_setup() {
   # Copy Apache configuration from local
   rsync -rvzh "/srv/config/apache-config/apache2.conf" "/etc/apache2/apache2.conf"
   rsync -rvzh "/srv/config/apache-config/httpd.conf" "/etc/apache2/httpd.conf"
-  # rsync -rvzh "/srv/config/apache-config/php5-fpm.conf" "/etc/apache2/conf-enabled/php5-fpm.conf"
   rsync -rvzh --delete "/srv/config/apache-config/sites/" "/etc/apache2/custom-sites/"
 
   echo " * /srv/config/apache-config/apache2.conf         -> /etc/apache2/apache2.conf"
   echo " * /srv/config/apache-config/httpd.conf           -> /etc/apache2/httpd.conf"
-  # echo " * /srv/config/apache-config/php5-fpm.conf        -> /etc/apache2/conf-enabled/php5-fpm.conf"
   echo " * /srv/config/apache-config/sites/               -> /etc/apache2/custom-sites/"
 
-  # Configure Apache for PHP-FPM
+  # Configure Apache
   a2enmod actions fastcgi alias
-
-  # Create php5.fcgi and give the webserver permission to use it
-  # mkdir -p /usr/lib/cgi-bin/
-  # touch /usr/lib/cgi-bin/php5.fcgi
-  # chown -R vagrant:www-data /usr/lib/cgi-bin
-
-  # Enable the php5-fpm conf
-  # a2enconf php5-fpm
 
   # Enable mod_rewrite
   a2enmod rewrite
@@ -451,30 +439,26 @@ apache_setup() {
   chmod -R oga+rw /etc/apache2
 }
 
-phpfpm_setup() {
-  mkdir -p "/etc/php5/fpm/pool.d" "/etc/php5/fpm/conf.d/"
+php_setup() {
+  # Make sure these directories exist
+  mkdir -p "/etc/php5/apache2/conf.d/"
 
-  # Copy php-fpm configuration from local
-  rsync -rvzh "/srv/config/php5-fpm-config/php5-fpm.conf" "/etc/php5/fpm/php5-fpm.conf"
-  rsync -rvzh "/srv/config/php5-fpm-config/www.conf" "/etc/php5/fpm/pool.d/www.conf"
-  rsync -rvzh "/srv/config/php5-fpm-config/php-custom.ini" "/etc/php5/fpm/conf.d/php-custom.ini"
-  rsync -rvzh "/srv/config/php5-fpm-config/opcache.ini" "/etc/php5/fpm/conf.d/opcache.ini"
-  rsync -rvzh "/srv/config/php5-fpm-config/xdebug.ini" "/etc/php5/mods-available/xdebug.ini"
+  # Copy php configuration from local
+  rsync -rvzh "/srv/config/php5-config/php-custom.ini" "/etc/php5/apache2/conf.d/php-custom.ini"
+  rsync -rvzh "/srv/config/php5-config/opcache.ini" "/etc/php5/apache2/conf.d/opcache.ini"
+  rsync -rvzh "/srv/config/php5-config/xdebug.ini" "/etc/php5/mods-available/xdebug.ini"
 
   # Find the path to Xdebug and prepend it to xdebug.ini
   XDEBUG_PATH=$(find /usr -name 'xdebug.so' | head -1)
   sed -i "1izend_extension=\"$XDEBUG_PATH\"" "/etc/php5/mods-available/xdebug.ini"
 
-  echo " * /srv/config/php5-fpm-config/php5-fpm.conf       -> /etc/php5/fpm/php5-fpm.conf"
-  echo " * /srv/config/php5-fpm-config/www.conf            -> /etc/php5/fpm/pool.d/www.conf"
-  echo " * /srv/config/php5-fpm-config/php-custom.ini      -> /etc/php5/fpm/conf.d/php-custom.ini"
-  echo " * /srv/config/php5-fpm-config/opcache.ini         -> /etc/php5/fpm/conf.d/opcache.ini"
-  echo " * /srv/config/php5-fpm-config/xdebug.ini          -> /etc/php5/mods-available/xdebug.ini"
+  echo " * /srv/config/php5-config/php-custom.ini         -> /etc/php5/apache2/conf.d/php-custom.ini"
+  echo " * /srv/config/php5-config/opcache.ini            -> /etc/php5/apache2/conf.d/opcache.ini"
+  echo " * /srv/config/php5-config/xdebug.ini             -> /etc/php5/mods-available/xdebug.ini"
 
   # Copy memcached configuration from local
   rsync -rvzh "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
-
-  echo " * /srv/config/memcached-config/memcached.conf     -> /etc/memcached.conf"
+  echo " * /srv/config/memcached-config/memcached.conf    -> /etc/memcached.conf"
 }
 
 mysql_setup() {
@@ -573,10 +557,10 @@ mailcatcher_setup() {
   fi
 
   if [[ -f "/etc/php5/mods-available/mailcatcher.ini" ]]; then
-    echo " * Mailcatcher php5 fpm already configured."
+    echo " * Mailcatcher php already configured."
   else
-    rsync -rvzh "/srv/config/php5-fpm-config/mailcatcher.ini" "/etc/php5/mods-available/mailcatcher.ini"
-    echo " * /srv/config/php5-fpm-config/mailcatcher.ini     -> /etc/php5/mods-available/mailcatcher.ini"
+    rsync -rvzh "/srv/config/php5-config/mailcatcher.ini" "/etc/php5/mods-available/mailcatcher.ini"
+    echo " * /srv/config/php5-config/mailcatcher.ini     -> /etc/php5/mods-available/mailcatcher.ini"
   fi
 }
 
@@ -605,8 +589,6 @@ services_restart() {
 
   # Enable PHP mailcatcher sendmail settings by default
   php5enmod mailcatcher
-
-  # service php5-fpm restart
 }
 
 wp_cli() {
@@ -753,7 +735,7 @@ package_install
 tools_install
 apache_setup
 mailcatcher_setup
-# phpfpm_setup
+php_setup
 services_restart
 mysql_setup
 

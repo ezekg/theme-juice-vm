@@ -24,8 +24,9 @@ A bunch of stuff!
 1. [Ubuntu](http://www.ubuntu.com/) 14.04.3 LTS (Trusty Tahr)
 1. [WP-CLI](http://wp-cli.org/)
 1. [Apache](http://httpd.apache.org/) 2.4.x
+1. [PHP](http://php.net/) 5.5.x
+1. [phpbrew](https://github.com/phpbrew/phpbrew) Current Stable Version
 1. [mysql](http://www.mysql.com/) 5.5.x
-1. [php-fpm](http://php-fpm.org/) 5.4.x
 1. [memcached](http://memcached.org/) 1.4.13
 1. PHP [memcache extension](http://pecl.php.net/package/memcache/3.0.8/) 3.0.8
 1. PHP [xdebug extension](http://pecl.php.net/package/xdebug/2.2.3/) 2.2.3
