@@ -20,6 +20,7 @@
 
 # No need to share individual site configs with each other
 /config/apache-config/sites/*.conf
+/config/apache-config/httpd.conf
 
 # Ignore anything in the 'custom' directory in config
 /config/custom/*

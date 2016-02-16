@@ -104,7 +104,7 @@ Vagrant.configure("2") do |config|
   # is now available inside the virtual machine to backup all databases for future use. This
   # command is automatically issued on halt, suspend, and destroy if the vagrant-triggers
   # plugin is installed.
-  if File.exists?(File.join(vagrant_dir,'database/data/mysql_upgrade_info')) then
+  if File.exist?(File.join(vagrant_dir,'database/data/mysql_upgrade_info')) then
     config.vm.synced_folder "database/data/", "/var/lib/mysql", :mount_options => ["dmode=775", "fmode=774"]
 
     # The Parallels Provider does not understand "dmode"/"fmode" in the "mount_options" as
@@ -136,6 +136,12 @@ Vagrant.configure("2") do |config|
   # of your project files here that you want to access through the web server
   config.vm.synced_folder "www/", "/srv/www/", :owner => "vagrant", :group => "www-data", :mount_options => ["dmode=775", "fmode=774"]
 
+  # Fix 'no tty' output
+  config.vm.provision "fix-no-tty", type: "shell" do |s|
+    s.privileged = false
+    s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
+  end
+
   # Customfile - POSSIBLY UNSTABLE
   #
   # Use this to insert your own (and possibly rewrite) Vagrant config lines. Helpful
@@ -155,7 +161,7 @@ Vagrant.configure("2") do |config|
   # provison-pre.sh acts as a pre-hook to our default provisioning script. Anything that
   # should run before the shell commands laid out in provision.sh (or your provision-custom.sh
   # file) should go in this script. If it does not exist, no extra provisioning will run.
-  if File.exists?(File.join(vagrant_dir,'provision','provision-pre.sh')) then
+  if File.exist?(File.join(vagrant_dir,'provision','provision-pre.sh')) then
     config.vm.provision :shell, :path => File.join( "provision", "provision-pre.sh" )
   end
 
@@ -165,7 +171,7 @@ Vagrant.configure("2") do |config|
   # provision directory. If it is detected that a provision-custom.sh script has been
   # created, that is run as a replacement. This is an opportunity to replace the entirety
   # of the provisioning provided by default.
-  if File.exists?(File.join(vagrant_dir,'provision','provision-custom.sh')) then
+  if File.exist?(File.join(vagrant_dir,'provision','provision-custom.sh')) then
     config.vm.provision :shell, :path => File.join("provision", "provision-custom.sh")
   else
     config.vm.provision :shell, :path => File.join("provision", "provision.sh")
@@ -175,7 +181,7 @@ Vagrant.configure("2") do |config|
   # run after the shell commands laid out in provision.sh or provision-custom.sh should be
   # put into this file. This provides a good opportunity to install additional packages
   # without having to replace the entire default provisioning script.
-  if File.exists?(File.join(vagrant_dir,'provision','provision-post.sh')) then
+  if File.exist?(File.join(vagrant_dir,'provision','provision-post.sh')) then
     config.vm.provision :shell, :path => File.join( "provision", "provision-post.sh" )
   end
 
@@ -185,7 +191,6 @@ Vagrant.configure("2") do |config|
     config.vm.provision :shell, :inline => "sudo service mysql restart", :run => "always"
     config.vm.provision :shell, :inline => "sudo service apache2 restart", :run => "always"
   end
-
 
   # Vagrant Triggers
   #
