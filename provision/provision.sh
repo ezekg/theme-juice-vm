@@ -419,13 +419,13 @@ source ~/.phpbrew/bashrc
 
 if [[ -z "$VERSION" ]]; then
   echo "No PHP version specified"
-  phpbrew list
+  sudo -i -u vagrant phpbrew list
   exit 1
 fi
 
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "Invalid PHP version: $VERSION (should be x.x.x)"
-  phpbrew known
+  sudo -i -u vagrant phpbrew known
   exit 1
 fi
 
@@ -440,16 +440,21 @@ fi
 if [[ ! -f "$SOFILE" ]]; then
   echo "PHP version $VERSION is not installed"
 
-  read -p "Do you want to install it? (y/N) " -r
+  if [[ "${@: -1}" =~ ^-y$ ]]; then
+    REPLY=y
+  else
+    read -p "Do you want to install it? (y/N) " -r
+  fi
+
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock
+    sudo -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock
   else
     exit 1
   fi
 fi
 
 echo "Switching PHP version to $VERSION..."
-phpbrew switch "$VERSION"
+sudo -i -u vagrant phpbrew switch "$VERSION"
 
 echo "Updating contents of $SOFILE to point to PHP version $VERSION..."
 FILECONTENTS="LoadModule php5_module $SOFILE"

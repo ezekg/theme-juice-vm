@@ -8,14 +8,18 @@ _This is a fork of [VVV Apache](https://github.com/ericmann/vvv-apache) for [`tj
 
 ### What is Vagrant?
 
-[Vagrant](http://www.vagrantup.com) is a "tool for building and distributing development environments". It works with [virtualization](http://en.wikipedia.org/wiki/X86_virtualization) software such as [VirtualBox](https://www.virtualbox.org/) to provide a virtual machine that is sandboxed away from your local environment.
+[Vagrant](http://www.vagrantup.com) is a "tool for building and distributing development
+environments". It works with [virtualization](http://en.wikipedia.org/wiki/X86_virtualization)
+software such as [VirtualBox](https://www.virtualbox.org/) to provide a virtual machine
+that is sandboxed away from your local environment.
 
 ### Credentials and Such
 
 #### MySQL Root
 * User: `root`
 * Pass: `root`
-* See: [Connecting to MySQL](https://github.com/10up/varying-vagrant-vagrants/wiki/Connecting-to-MySQL) from your local machine
+* See: [Connecting to MySQL](https://github.com/10up/varying-vagrant-vagrants/wiki/Connecting-to-MySQL)
+  from your local machine
 
 ### What do you get?
 
@@ -45,11 +49,28 @@ A bunch of stuff!
 1. [NodeJs](http://nodejs.org/) Current Stable Version
 1. [grunt-cli](https://github.com/gruntjs/grunt-cli) Current Stable Version
 
+### Switching PHP versions
+Create a new file called `provision/provision-post.sh` and add the PHP version
+you would like to use, making sure it contains all 3 parts (i.e. `x.x.x`). See
+the following example:
+
+```bash
+php-switch 5.6.18 -y
+```
+
+After that, provision the VM with `vagrant provision`. Bam! That easy!
+
+_Currently, this feature is limited to **only** PHP `5.x`. I haven't been able
+to find a way to consistently configure other versions with Apache/MySQL._
+
 ### Need Help?
 
-* Let us have it! Don't hesitate to open a new issue on GitHub if you run into trouble or have any tips that we need to know.
-* There is a [Mailing list](https://groups.google.com/forum/#!forum/wordpress-and-vagrant) for any topic related to WordPress and Vagrant that is a great place to get started.
-* The [VVV Wiki](https://github.com/10up/varying-vagrant-vagrants/wiki) also contains documentation that may help.
+* Let us have it! Don't hesitate to open a new issue on GitHub if you run into
+  trouble or have any tips that we need to know.
+* There is a [Mailing list](https://groups.google.com/forum/#!forum/wordpress-and-vagrant)
+  for any topic related to WordPress and Vagrant that is a great place to get started.
+* The [VVV Wiki](https://github.com/10up/varying-vagrant-vagrants/wiki) also
+  contains documentation that may help.
 
 ### More Context
 
