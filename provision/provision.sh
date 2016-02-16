@@ -415,7 +415,7 @@ php_setup() {
 VERSION="$1"
 SOFILE="/usr/lib/apache2/modules/libphp$VERSION.so"
 CONFFILE="/etc/apache2/mods-available/php5.load"
-source ~/.phpbrew/bashrc
+sudo -i -u vagrant source ~/.phpbrew/bashrc
 
 if [[ -z "$VERSION" ]]; then
   echo "No PHP version specified"
