@@ -415,7 +415,7 @@ php_setup() {
 VERSION="$1"
 SOFILE="/usr/lib/apache2/modules/libphp$VERSION.so"
 CONFFILE="/etc/apache2/mods-available/php5.load"
-sudo -i -u vagrant source ~/.phpbrew/bashrc
+sudo -i -u vagrant source ~vagrant/.phpbrew/bashrc
 
 if [[ -z "$VERSION" ]]; then
   echo "No PHP version specified"
@@ -466,7 +466,7 @@ EOT
     chmod +x "/usr/local/bin/php-switch"
   fi
 
-  sudo -i -u vagrant source ~/.phpbrew/bashrc
+  sudo -i -u vagrant source ~vagrant/.phpbrew/bashrc
 }
 
 mysql_setup() {
