@@ -305,78 +305,6 @@ tools_install() {
     COMPOSER_HOME=/usr/local/src/composer composer global update
   fi
 
-  # phpbrew
-  #
-  # Install or update phpbrew based on current state.
-  if [[ "$(phpbrew --version)" ]]; then
-    echo "Updating phpbrew..."
-    phpbrew self-update
-  else
-    echo "Installing phpbrew..."
-    curl -L -O "https://github.com/phpbrew/phpbrew/raw/master/phpbrew"
-    chmod +x "phpbrew"
-    mv "phpbrew" "/usr/local/bin/phpbrew"
-    echo "Initializing phpbrew..."
-
-    # Initialize at vagrant user
-    sudo -i -u vagrant phpbrew init
-  fi
-
-  # php-switch
-  #
-  # Install php-switch helper.
-  if [[ ! -f "/usr/local/bin/php-switch" ]]; then
-    echo "Installing php-switch..."
-    cat > /usr/local/bin/php-switch <<'EOT'
-#!/usr/bin/env bash
-VERSION="$1"
-SOFILE="/usr/lib/apache2/modules/libphp$VERSION.so"
-CONFFILE="/etc/apache2/mods-available/php5.load"
-source ~/.phpbrew/bashrc
-
-if [[ -z "$VERSION" ]]; then
-  echo "No PHP version specified"
-  phpbrew list
-  exit 1
-fi
-
-if [[ ! "$VERSION" =~ ^[0-9]\.[0-9]\.[0-9]$ ]]; then
-  echo "Invalid PHP version: $VERSION (should be x.x.x)"
-  exit 1
-fi
-
-if [[ ! "$VERSION" =~ ^5 ]]; then
-  echo "Right now, only PHP version 5.x is supported."
-  echo "Do you know how to configure PHP 7.x (or older versions of PHP) using phpbrew?"
-  echo "Help out by submitting a pull request!"
-  echo " * https://github.com/ezekg/theme-juice-vvv"
-  exit 1
-fi
-
-if [[ ! -f "$SOFILE" ]]; then
-  echo "PHP version $VERSION is not installed"
-
-  read -p "Do you want to install it? (y/N) " -r
-  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2
-    phpbrew install "php-$VERSION" +default +mysql +debug +cgi
-  else
-    exit 1
-  fi
-fi
-
-echo "Switching PHP version to $VERSION..."
-phpbrew switch "$VERSION"
-FILECONTENTS="LoadModule php5_module $SOFILE"
-echo "$FILECONTENTS" > "$CONFFILE"
-echo "Updated $CONFFILE"
-sudo service apache2 restart
-EOT
-    chmod +x "/usr/local/bin/php-switch"
-    echo "[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc" >> ~/.bashrc
-    source ~/.bashrc
-  fi
-
   # node
   #
   # Create a symlink for nodejs->node.
@@ -459,6 +387,77 @@ php_setup() {
   # Copy memcached configuration from local
   rsync -rvzh "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
   echo " * /srv/config/memcached-config/memcached.conf    -> /etc/memcached.conf"
+
+  # phpbrew
+  #
+  # Install or update phpbrew based on current state.
+  if [[ "$(phpbrew --version)" ]]; then
+    echo "Updating phpbrew..."
+    phpbrew self-update
+  else
+    echo "Installing phpbrew..."
+    curl -L -O "https://github.com/phpbrew/phpbrew/raw/master/phpbrew"
+    chmod +x "phpbrew"
+    mv "phpbrew" "/usr/local/bin/phpbrew"
+    # Initialize as vagrant user
+    echo "Initializing phpbrew..."
+    sudo -i -u vagrant phpbrew init
+  fi
+
+  # php-switch
+  #
+  # Install php-switch helper.
+  if [[ ! -f "/usr/local/bin/php-switch" ]]; then
+    echo "Installing php-switch..."
+    cat > /usr/local/bin/php-switch <<'EOT'
+#!/usr/bin/env bash
+VERSION="$1"
+SOFILE="/usr/lib/apache2/modules/libphp$VERSION.so"
+CONFFILE="/etc/apache2/mods-available/php5.load"
+source ~/.phpbrew/bashrc
+
+if [[ -z "$VERSION" ]]; then
+  echo "No PHP version specified"
+  phpbrew list
+  exit 1
+fi
+
+if [[ ! "$VERSION" =~ ^[0-9]\.[0-9](\.[0-9])?$ ]]; then
+  echo "Invalid PHP version: $VERSION (should be x.x(.x)?)"
+  exit 1
+fi
+
+if [[ ! "$VERSION" =~ ^5 ]]; then
+  echo "Right now, only PHP version 5.x is supported."
+  echo "Do you know how to configure PHP 7.x (or older versions of PHP) using phpbrew?"
+  echo "Help out by submitting a pull request!"
+  echo " * https://github.com/ezekg/theme-juice-vvv"
+  exit 1
+fi
+
+if [[ ! -f "$SOFILE" ]]; then
+  echo "PHP version $VERSION is not installed"
+
+  read -p "Do you want to install it? (y/N) " -r
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2
+    phpbrew install "php-$VERSION" +default +mysql +debug +cgi
+  else
+    exit 1
+  fi
+fi
+
+echo "Switching PHP version to $VERSION..."
+phpbrew switch "$VERSION"
+FILECONTENTS="LoadModule php5_module $SOFILE"
+echo "$FILECONTENTS" > "$CONFFILE"
+echo "Updated $CONFFILE"
+sudo service apache2 restart
+EOT
+    chmod +x "/usr/local/bin/php-switch"
+  fi
+
+  source ~/.phpbrew/bashrc
 }
 
 mysql_setup() {
