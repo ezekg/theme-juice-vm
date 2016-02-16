@@ -466,7 +466,7 @@ EOT
     chmod +x "/usr/local/bin/php-switch"
   fi
 
-  source ~/.phpbrew/bashrc
+  sudo -i -u vagrant source ~/.phpbrew/bashrc
 }
 
 mysql_setup() {
