@@ -55,7 +55,13 @@ you would like to use, making sure it contains all 3 parts (i.e. `x.x.x`). See
 the following example:
 
 ```bash
-php-switch 5.6.18 -y
+php-switch 5.6.18 -y # -y skips all prompts
+```
+
+Alternatively, you can `vagrant ssh` into the VM and run,
+
+```bash
+php-switch 5.6.18
 ```
 
 After that, provision the VM with `vagrant provision`. Bam! That easy!
