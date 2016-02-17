@@ -78,6 +78,8 @@ apt_package_check_list=(
   libmhash2
   libmcrypt-dev
   libmcrypt4
+  libmagickwand-dev
+  libmagickcore-dev
 
   # Apache is installed as the default web server
 	apache2-mpm-prefork
@@ -447,27 +449,41 @@ if [[ ! -f "$SOFILE" ]]; then
   fi
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-    sudo -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-config-file-scan-dir=/etc/php5/apache2/conf.d/
+    echo "Installing PHP version $VERSION..."
+    sudo -E -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-config-file-scan-dir=/etc/php5/apache2/custom-conf.d/
   else
-    exit 1
+    exit 0
   fi
 fi
 
-echo "Switching PHP version to $VERSION..."
-sudo -i -u vagrant phpbrew switch "$VERSION"
+sudo -E su vagrant <<END
+  source ~/.phpbrew/bashrc
 
-echo "Updating contents of $SOFILE to point to PHP version $VERSION..."
-FILECONTENTS="LoadModule php5_module $SOFILE"
-echo "$FILECONTENTS" > "$CONFFILE"
+  echo "Switching PHP version to $VERSION..."
+  phpbrew switch "$VERSION"
+
+  echo "Installing PHP extensions for version $VERSION..."
+  phpbrew ext install openssl  && phpbrew ext enable openssl  || echo "Failed to install openssl"
+  phpbrew ext install memcache && phpbrew ext enable memcache || echo "Failed to install memcache"
+  phpbrew ext install imagick  && phpbrew ext enable imagick  || echo "Failed to install imagick"
+  phpbrew ext install xdebug                                  || echo "Failed to install xdebug"
+END
+
+if [[ -f "$SOFILE" ]]; then
+  echo "Updating contents of $CONFFILE to load PHP version $VERSION..."
+  echo "LoadModule php5_module $SOFILE" > "$CONFFILE"
+else
+  echo "Could not locate $SOFILE"
+  echo "Failed to fully install PHP version $VERSION"
+  exit 1
+fi
 
 echo "Restarting Apache..."
 sudo service apache2 restart
 EOT
     chmod +x "/usr/local/bin/php-switch"
-    echo -e "\n[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc" >> ~vagrant/.bashrc
+    echo -e "\n[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc" >> ~vagrant/.bash_profile
   fi
-
-  sudo -i -u vagrant source ~vagrant/.phpbrew/bashrc
 }
 
 mysql_setup() {
