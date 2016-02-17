@@ -1,4 +1,5 @@
 # Theme Juice VM
+![image](https://cloud.githubusercontent.com/assets/6979737/13116898/58565d42-d563-11e5-93c5-619f5991564d.png)
 
 ## Getting Started
 
@@ -31,6 +32,10 @@ that is sandboxed away from your local environment.
 | [npm](https://www.npmjs.com/)                                    | `stable`  | npm is a dependency manager for Node.js.                                                                                                                                                                               |
 | [Grunt](http://gruntjs.com/)                                     | `stable`  | Grunt is a task runner for JavaScript.                                                                                                                                                                                 |
 
+### Dashboard
+You can view things such as a PHP `phpinfo()` dump, phpMemcachedAdmin, phpMyAdmin,
+Webgrind and more through the [main dashboard](http://vvv.dev/).
+
 ### Switching PHP versions
 Create a new file called `provision/provision-post.sh` and add the PHP version
 you would like to use, making sure it contains all 3 parts (i.e. `x.x.x`). See
@@ -58,9 +63,9 @@ to find a way to consistently configure other versions with Apache/MySQL. If
 you have the chops, I'd love the help._
 
 ### Credentials and Such
-| Program | User   | Pass   |
-| :------ | :----- | :----- |
-| MySQL   | `root` | `root` |
+| Program | User   | Pass   | Dashboard                                                        |
+| :------ | :----- | :----- | :--------------------------------------------------------------- |
+| MySQL   | `root` | `root` | [http://vvv.dev/database-admin/](http://vvv.dev/database-admin/) |
 
 ### Need Help?
 * Let us have it! Don't hesitate to open a new issue on GitHub if you run into
