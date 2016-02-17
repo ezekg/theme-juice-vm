@@ -417,25 +417,26 @@ php_setup() {
 VERSION="$1"
 SOFILE="/usr/lib/apache2/modules/libphp$VERSION.so"
 CONFFILE="/etc/apache2/mods-available/php5.load"
-sudo -i -u vagrant source ~vagrant/.phpbrew/bashrc
 
 if [[ -z "$VERSION" ]]; then
   echo "No PHP version specified"
-  sudo -i -u vagrant phpbrew list
+  echo "Usage: php-switch <version> [-y]"
+  echo "   -y: answer yes to all prompts"
+  sudo -E -i -u vagrant phpbrew list
   exit 1
 fi
 
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "Invalid PHP version: $VERSION (should be x.x.x)"
-  sudo -i -u vagrant phpbrew known
+  sudo -E -i -u vagrant phpbrew known
   exit 1
 fi
 
 if [[ ! "$VERSION" =~ ^5 ]]; then
   echo "Right now, only PHP version 5.x is supported."
-  echo "Do you know how to configure PHP 7.x (or older versions of PHP) using phpbrew?"
-  echo "Help out by submitting a pull request!"
-  echo " * https://github.com/ezekg/theme-juice-vvv"
+  echo "Do you know how to configure PHP 7.x (or older versions of PHP) using"
+  echo "PHPBrew? Help out by submitting a pull request at:"
+  echo "https://github.com/ezekg/theme-juice-vvv"
   exit 1
 fi
 
