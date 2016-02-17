@@ -371,20 +371,20 @@ apache_setup() {
 
 php_setup() {
   # Make sure these directories exist
-  mkdir -p "/etc/php5/apache2/conf.d/"
+  mkdir -p "/etc/php5/apache2/custom-conf.d/"
 
   # Copy php configuration from local
-  rsync -rvzh "/srv/config/php5-config/php-custom.ini" "/etc/php5/apache2/conf.d/php-custom.ini"
-  rsync -rvzh "/srv/config/php5-config/opcache.ini" "/etc/php5/apache2/conf.d/opcache.ini"
-  rsync -rvzh "/srv/config/php5-config/xdebug.ini" "/etc/php5/mods-available/xdebug.ini"
+  rsync -rvzh "/srv/config/php5-config/php-custom.ini" "/etc/php5/apache2/custom-conf.d/php-custom.ini"
+  rsync -rvzh "/srv/config/php5-config/opcache.ini" "/etc/php5/apache2/custom-conf.d/opcache.ini"
+  rsync -rvzh "/srv/config/php5-config/xdebug.ini" "/etc/php5/apache2/custom-conf.d/xdebug.ini"
 
   # Find the path to Xdebug and prepend it to xdebug.ini
   XDEBUG_PATH=$(find /usr -name 'xdebug.so' | head -1)
   sed -i "1izend_extension=\"$XDEBUG_PATH\"" "/etc/php5/mods-available/xdebug.ini"
 
-  echo " * /srv/config/php5-config/php-custom.ini         -> /etc/php5/apache2/conf.d/php-custom.ini"
-  echo " * /srv/config/php5-config/opcache.ini            -> /etc/php5/apache2/conf.d/opcache.ini"
-  echo " * /srv/config/php5-config/xdebug.ini             -> /etc/php5/mods-available/xdebug.ini"
+  echo " * /srv/config/php5-config/php-custom.ini         -> /etc/php5/apache2/custom-conf.d/php-custom.ini"
+  echo " * /srv/config/php5-config/opcache.ini            -> /etc/php5/apache2/custom-conf.d/opcache.ini"
+  echo " * /srv/config/php5-config/xdebug.ini             -> /etc/php5/apache2/custom-conf.d/xdebug.ini"
 
   # Copy memcached configuration from local
   rsync -rvzh "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
