@@ -467,7 +467,7 @@ sudo -E su vagrant <<END
   phpbrew ext install openssl  && phpbrew ext enable openssl  || echo "Failed to install openssl"
   phpbrew ext install memcache && phpbrew ext enable memcache || echo "Failed to install memcache"
   phpbrew ext install imagick  && phpbrew ext enable imagick  || echo "Failed to install imagick"
-  phpbrew ext install xdebug                                  || echo "Failed to install xdebug"
+  phpbrew ext install xdebug   && phpbrew ext disable xdebug  || echo "Failed to install xdebug"
 END
 
 if [[ -f "$SOFILE" ]]; then
