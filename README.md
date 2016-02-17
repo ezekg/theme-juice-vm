@@ -55,19 +55,21 @@ you would like to use, making sure it contains all 3 parts (i.e. `x.x.x`). See
 the following example:
 
 ```bash
+#!/bin/bash
 php-switch 5.6.18 -y # -y skips all prompts
 ```
 
 After that, provision the VM with `vagrant provision`. Bam! That easy!
 
-Alternatively, you can `vagrant ssh` into the VM and run,
-
+Alternatively, you can `vagrant ssh` into the VM and run, for example,
 ```bash
 php-switch 5.6.18
 ```
 
 Using `php-switch` over SSH doesn't require you to provision the VM, so in the
-end it is a lot faster.
+end it is a lot faster. If you'd like to permanently use a specific PHP version,
+you should use the `provision-post.sh` method, as that will persist even if
+the VM is destroyed and re-created.
 
 _Currently, this feature is limited to **only** PHP `5.x`. I haven't been able
 to find a way to consistently configure other versions with Apache/MySQL. If
