@@ -464,6 +464,7 @@ echo "Restarting Apache..."
 sudo service apache2 restart
 EOT
     chmod +x "/usr/local/bin/php-switch"
+    echo -e "\n[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc" >> ~vagrant/.bashrc
   fi
 
   sudo -i -u vagrant source ~vagrant/.phpbrew/bashrc
