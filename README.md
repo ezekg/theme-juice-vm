@@ -9,7 +9,8 @@ software such as [VirtualBox](https://www.virtualbox.org/) to provide a virtual 
 that is sandboxed away from your local environment.
 
 ### What do you get?
-+ ---------------------------------------------------------------------------------------------- +
+| Thing                                                            | Version                     |
+| :--------------------------------------------------------------- | :-------------------------- |
 | [Ubuntu](http://www.ubuntu.com/)                                 | `14.04.3 LTS` (Trusty Tahr) |
 | [WP-CLI](http://wp-cli.org/)                                     | `stable`                    |
 | [Apache](http://httpd.apache.org/)                               | `2.4.x`                     |
@@ -30,7 +31,6 @@ that is sandboxed away from your local environment.
 | [Webgrind](https://github.com/jokkedk/webgrind)                  | `stable`                    |
 | [NodeJs](http://nodejs.org/)                                     | `stable`                    |
 | [grunt-cli](https://github.com/gruntjs/grunt-cli)                | `stable`                    |
-+ ---------------------------------------------------------------------------------------------- +
 
 ### Switching PHP versions
 Create a new file called `provision/provision-post.sh` and add the PHP version
@@ -59,10 +59,9 @@ to find a way to consistently configure other versions with Apache/MySQL. If
 you have the chops, I'd love the help._
 
 ### Credentials and Such
-+ ------------------------- +
 | Program | User   | Pass   |
+| :------ | :----- | :----- |
 | MySQL   | `root` | `root` |
-+ ------------------------- +
 
 ### Need Help?
 * Let us have it! Don't hesitate to open a new issue on GitHub if you run into
