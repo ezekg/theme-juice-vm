@@ -1,57 +1,72 @@
-# Theme Juice VVV
-
-_This is a fork of [VVV Apache](https://github.com/ericmann/vvv-apache) for [`tj`](https://github.com/ezekg/theme-juice-cli). Huge shoutout to the contributors on that project, as well as the original [Varying Vagrant Vagrants](https://github.com/Varying-Vagrant-Vagrants/VVV). The list of contributors as of this fork are below:_
-
-* **Contributors**: [@jeremyfelt](http://github.com/jeremyfelt), [@carldanley](http://github.com/carldanley), [@ericmann](http://github.com/ericmann), [@lkwdwrd](http://github.com/lkwdwrd), [@TheLastCicada](http://github.com/TheLastCicada), [@tddewey](http://github.com/tddewey), [@johnpbloch](http://github.com/johnpbloch), [@kadamwhite](http://github.com/kadamwhite), [@scribu](http://github.com/scribu), [@danielbachhuber](http://github.com/danielbachhuber), [@tollmanz](http://github.com/tollmanz), [@mbijon](http://github.com/mbijon), [@markjaquith](http://github.com/markjaquith), [@curtismchale](http://github.com/curtismchale), [@Mamaduka](http://github.com/mamaduka), [@lgedeon](http://github.com/lgedeon), [@pmgarman](http://github.com/pmgarman), [@westonruter](http://github.com/westonruter), [@petemall](http://github.com/petemall), [@cmmarslender](http://github.com/cmmarslender), [@mintindeed](http://github.com/mintindeed), [@mboynes](http://github.com/mboynes), [@aaronjorbin](http://github.com/aaronjorbin), [@tobiasbg](http://github.com/tobiasbg), [@simonwheatley](http://github.com/simonwheatley), [@ocean90](http://github.com/ocean90), [@lvnilesh](http://github.com/lvnilesh), [@alexw23](http://github.com/alexw23), [@zamoose](https://github.com/zamoose), [@leewillis77](https://github.com/leewillis77), [@imichaeli](https://github.com/imichaeli), [@andrezrv](https://github.com/andrezrv), [@cadwell](https://github.com/cadwell), [@cfoellmann](https://github.com/cfoellmann), [@westi](https://github.com/westi), [@ryanduff](https://github.com/ryanduff)
+# Theme Juice VM
+![image](https://cloud.githubusercontent.com/assets/6979737/13116898/58565d42-d563-11e5-93c5-619f5991564d.png)
 
 ## Getting Started
 
 ### What is Vagrant?
-
-[Vagrant](http://www.vagrantup.com) is a "tool for building and distributing development environments". It works with [virtualization](http://en.wikipedia.org/wiki/X86_virtualization) software such as [VirtualBox](https://www.virtualbox.org/) to provide a virtual machine that is sandboxed away from your local environment.
-
-### Credentials and Such
-
-#### MySQL Root
-* User: `root`
-* Pass: `root`
-* See: [Connecting to MySQL](https://github.com/10up/varying-vagrant-vagrants/wiki/Connecting-to-MySQL) from your local machine
+[Vagrant](http://www.vagrantup.com) is a "tool for building and distributing development
+environments". It works with [virtualization](http://en.wikipedia.org/wiki/X86_virtualization)
+software such as [VirtualBox](https://www.virtualbox.org/) to provide a virtual machine
+that is sandboxed away from your local environment.
 
 ### What do you get?
+| Name                                                             | Version   | Description                                                                                                                                                                                                            |
+| :--------------------------------------------------------------- | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Ubuntu](http://www.ubuntu.com/)                                 | `14.04.3` | Ubuntu is a Debian-based Linux operating system and distribution for personal computers, smartphones and network servers.                                                                                              |
+| [Apache](http://httpd.apache.org/)                               | `2.4.x`   | The Apache HTTP Server, colloquially called Apache, is the world's most used web server software.                                                                                                                      |
+| [PHP](http://php.net/)                                           | `5.5.x`   | PHP (recursive acronym for PHP: Hypertext Preprocessor) is a widely-used open source general-purpose scripting language that is especially suited for web development and can be embedded into HTML.                   |
+| [PHPBrew](https://github.com/phpbrew/phpbrew)                    | `stable`  | PHPBrew allows you to easily switch PHP versions.                                                                                                                                                                      |
+| [MySQL](http://www.mysql.com/)                                   | `5.5.x`   | MySQL is an open-source relational database management system.                                                                                                                                                         |
+| [WP-CLI](http://wp-cli.org/)                                     | `stable`  | WP-CLI is a set of command-line tools for managing WordPress installations.                                                                                                                                            |
+| [Composer](https://getcomposer.org/)                             | `stable`  | Composer is a dependency manager for PHP.                                                                                                                                                                              |
+| [Xdebug](http://xdebug.org/)                                     | `2.2.x`   | Xdebug is a PHP extension which provides debugging and profiling capabilities.                                                                                                                                         |
+| [Webgrind](https://github.com/jokkedk/webgrind)                  | `stable`  | Webgrind is an Xdebug profiling web frontend in PHP.                                                                                                                                                                   |
+| [Memcached](http://memcached.org/)                               | `1.4.x`   | Memcached (pronunciation: mem-cash-dee) is a general-purpose distributed memory caching system.                                                                                                                        |
+| [phpMemcachedAdmin](https://code.google.com/p/phpmemcacheadmin/) | `1.2.x`   | phpMemcachedAdmin is an administration panel for Memcached for monitoring and debugging purposes.                                                                                                                      |
+| [phpMyAdmin](http://www.phpmyadmin.net/)                         | `4.0.x`   | phpMyAdmin is a tool written in PHP, intended to handle the administration of MySQL over the Web.                                                                                                                      |
+| [ack](http://beyondgrep.com/)                                    | `2.14.x`  | ack is a tool like grep, optimized for programmers.                                                                                                                                                                    |
+| [git](http://git-scm.com/)                                       | `1.8.x`   | Git is a widely used source code management system for software development. It is a distributed revision control system with an emphasis on speed, data integrity, and support for distributed, non-linear workflows. |
+| [ngrep](http://ngrep.sourceforge.net/usage.html)                 | `1.45.x`  | ngrep (network grep) is a network packet analyzer.                                                                                                                                                                     |
+| [dos2unix](http://dos2unix.sourceforge.net/)                     | `6.0.x`   | dos2unix converts text files with DOS or Mac line endings to Unix line endings and vice versa.                                                                                                                         |
+| [Node.js](https://nodejs.org/)                                   | `stable`  | Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.                                                  |
+| [npm](https://www.npmjs.com/)                                    | `stable`  | npm is a dependency manager for Node.js.                                                                                                                                                                               |
+| [Grunt](http://gruntjs.com/)                                     | `stable`  | Grunt is a task runner for JavaScript.                                                                                                                                                                                 |
 
-A bunch of stuff!
+### Dashboard
+You can view things such as a PHP `phpinfo()` dump, phpMemcachedAdmin, phpMyAdmin,
+Webgrind and more through the [main dashboard](http://vvv.dev/).
 
-1. [Ubuntu](http://www.ubuntu.com/) 14.04.3 LTS (Trusty Tahr)
-1. [WP-CLI](http://wp-cli.org/)
-1. [Apache](http://httpd.apache.org/) 2.4.x
-1. [mysql](http://www.mysql.com/) 5.5.x
-1. [php-fpm](http://php-fpm.org/) 5.4.x
-1. [memcached](http://memcached.org/) 1.4.13
-1. PHP [memcache extension](http://pecl.php.net/package/memcache/3.0.8/) 3.0.8
-1. PHP [xdebug extension](http://pecl.php.net/package/xdebug/2.2.3/) 2.2.3
-1. PHP [imagick extension](http://pecl.php.net/package/imagick/3.1.0RC2/) 3.1.0RC2
-1. [xdebug](http://xdebug.org/) 2.2.3
-1. [PHPUnit](http://pear.phpunit.de/) 3.7.24
-1. [ack-grep](http://beyondgrep.com/) 2.04
-1. [git](http://git-scm.com/) 1.8.5
-1. [subversion](http://subversion.apache.org/) 1.7.9
-1. [ngrep](http://ngrep.sourceforge.net/usage.html)
-1. [dos2unix](http://dos2unix.sourceforge.net/)
-1. [Composer](https://github.com/composer/composer)
-1. [phpMemcachedAdmin](https://code.google.com/p/phpmemcacheadmin/) 1.2.2 BETA
-1. [phpMyAdmin](http://www.phpmyadmin.net/) 4.0.10 (multi-language)
-1. [Webgrind](https://github.com/jokkedk/webgrind)
-1. [NodeJs](http://nodejs.org/) Current Stable Version
-1. [grunt-cli](https://github.com/gruntjs/grunt-cli) Current Stable Version
+### Switching PHP versions
+Create a new file called `provision/provision-post.sh` and add the PHP version
+you would like to use, making sure it contains all 3 parts (i.e. `x.x.x`). See
+the following example:
+
+```bash
+#!/bin/bash
+php-switch 5.6.18 -y # -y skips all prompts
+```
+
+After that, provision the VM with `vagrant provision`. Bam! That easy!
+
+Alternatively, you can `vagrant ssh` into the VM and run, for example,
+```bash
+php-switch 5.6.18
+```
+
+Using `php-switch` over SSH doesn't require you to provision the VM, so in the
+end it is a lot faster. If you'd like to permanently use a specific PHP version,
+you should use the `provision-post.sh` method, as that will persist even if
+the VM is destroyed and re-created.
+
+_Currently, this feature is limited to **only** PHP `5.x`. I haven't been able
+to find a way to consistently configure other versions with Apache/MySQL. If
+you have the chops, I'd love the help._
+
+### Credentials and Such
+| Program | User   | Pass   | Dashboard                                                        |
+| :------ | :----- | :----- | :--------------------------------------------------------------- |
+| MySQL   | `root` | `root` | [http://vvv.dev/database-admin/](http://vvv.dev/database-admin/) |
 
 ### Need Help?
-
-* Let us have it! Don't hesitate to open a new issue on GitHub if you run into trouble or have any tips that we need to know.
-* There is a [Mailing list](https://groups.google.com/forum/#!forum/wordpress-and-vagrant) for any topic related to WordPress and Vagrant that is a great place to get started.
-* The [VVV Wiki](https://github.com/10up/varying-vagrant-vagrants/wiki) also contains documentation that may help.
-
-### More Context
-
-* [Varying Vagrant Vagrants](http://jeremyfelt.com/code/2012/12/11/varying-vagrant-vagrants/), where it all started.
-* [Hi WordPress, Meet Vagrant](http://jeremyfelt.com/code/2013/04/08/hi-wordpress-meet-vagrant/), the blog post.
-* [Hi WordPress, Meet Vagrant](http://wordpress.tv/2013/10/19/jeremy-felt-hi-wordpress-meet-vagrant/), the talk at WordCamp Vancouver.
+* Let us have it! Don't hesitate to open a new issue on GitHub if you run into
+  trouble or have any tips that we need to know.

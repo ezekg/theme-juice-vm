@@ -26,7 +26,7 @@ apt_package_install_list=()
 apt_package_check_list=(
 
 	# Our base packages for php5
-	php5-fpm
+  php5
 	php5-cli
 
 	# Common and dev packages for php
@@ -44,17 +44,55 @@ apt_package_check_list=(
 	php-pear
 	php5-gd
 	php-apc
-	php5
+
+  # Dependencies for building PHP versions with phpbrew
+  autoconf
+  automake
+  libcurl3-openssl-dev
+  build-essential
+  libxslt1-dev
+  re2c
+  libxml2
+  libxml2-dev
+  bison
+  libbz2-dev
+  libreadline-dev
+  libfreetype6
+  libfreetype6-dev
+  libpng12-0
+  libpng12-dev
+  libjpeg-dev
+  libjpeg8-dev
+  libjpeg8
+  libgd-dev
+  libgd3
+  libxpm4
+  libltdl7
+  libltdl-dev
+  libssl-dev
+  openssl
+  libgettextpo-dev
+  libgettextpo0
+  libicu-dev
+  libmhash-dev
+  libmhash2
+  libmcrypt-dev
+  libmcrypt4
 
   # Apache is installed as the default web server
-	apache2-mpm-worker
+	apache2-mpm-prefork
+  apache2-dev
 	libapache2-mod-fastcgi
+  libapache2-mod-php5
 
   # Memcached is made available for object caching
   memcached
 
   # MySQL is the default database
   mysql-server
+  mysql-client
+  libmysqlclient-dev
+  libmysqld-dev
 
   # Other packages that come in handy
   imagemagick
@@ -86,6 +124,7 @@ apt_package_check_list=(
   # Nodejs for use by grunt
   g++
   nodejs
+  npm
 
   # Mailcatcher dependency
   libsqlite3-dev
@@ -116,28 +155,24 @@ network_check() {
   fi
 }
 
-noroot() {
-  sudo -EH -u "vagrant" "$@";
-}
-
 profile_setup() {
   # Copy custom dotfiles and bin file for the vagrant user from local
-  sudo rsync -rvzh "/srv/config/bash_profile" "/home/vagrant/.bash_profile"
-  sudo rsync -rvzh "/srv/config/bash_aliases" "/home/vagrant/.bash_aliases"
-  sudo rsync -rvzh "/srv/config/vimrc" "/home/vagrant/.vimrc"
+  rsync -rvzh "/srv/config/bash_profile" "/home/vagrant/.bash_profile"
+  rsync -rvzh "/srv/config/bash_aliases" "/home/vagrant/.bash_aliases"
+  rsync -rvzh "/srv/config/vimrc" "/home/vagrant/.vimrc"
 
   if [[ ! -d "/home/vagrant/.subversion" ]]; then
     mkdir "/home/vagrant/.subversion"
   fi
 
-  sudo rsync -rvzh "/srv/config/subversion-servers" "/home/vagrant/.subversion/servers"
+  rsync -rvzh "/srv/config/subversion-servers" "/home/vagrant/.subversion/servers"
 
   if [[ ! -d "/home/vagrant/bin" ]]; then
     mkdir "/home/vagrant/bin"
   fi
 
-  sudo rsync -rvzh --delete "/srv/config/homebin/" "/home/vagrant/bin/"
-  sudo chmod +x /home/vagrant/bin/*
+  rsync -rvzh --delete "/srv/config/homebin/" "/home/vagrant/bin/"
+  chmod +x /home/vagrant/bin/*
 
   echo " * /srv/config/bash_profile                        -> /home/vagrant/.bash_profile"
   echo " * /srv/config/bash_aliases                        -> /home/vagrant/.bash_aliases"
@@ -147,7 +182,7 @@ profile_setup() {
 
   # If a bash_prompt file exists in the VVV config/ directory, copy to the VM.
   if [[ -f "/srv/config/bash_prompt" ]]; then
-    sudo rsync -rvzh "/srv/config/bash_prompt" "/home/vagrant/.bash_prompt"
+    rsync -rvzh "/srv/config/bash_prompt" "/home/vagrant/.bash_prompt"
     echo " * /srv/config/bash_prompt                          -> /home/vagrant/.bash_prompt"
   fi
 }
@@ -216,6 +251,7 @@ package_install() {
 }
 
 tools_install() {
+
   # npm
   #
   # Make sure we have the latest npm version and the update checker module
@@ -240,7 +276,7 @@ tools_install() {
     curl -s http://beyondgrep.com/ack-2.14-single-file > "/usr/bin/ack" && chmod +x "/usr/bin/ack"
   fi
 
-  # COMPOSER
+  # Composer
   #
   # Install Composer if it is not yet available.
   if [[ ! -n "$(composer --version --no-ansi | grep 'Composer version')" ]]; then
@@ -269,18 +305,23 @@ tools_install() {
     COMPOSER_HOME=/usr/local/src/composer composer global update
   fi
 
+  # node
+  #
+  # Create a symlink for nodejs->node.
+  echo "Adding node symlink..."
+  ln -sf "$(which nodejs)" "/usr/local/bin/node"
+
   # Grunt
   #
-  # Install or Update Grunt based on current state.  Updates are direct
-  # from NPM
+  # Install or update Grunt based on current state.
   if [[ "$(grunt --version)" ]]; then
-    echo "Updating Grunt CLI"
+    echo "Updating Grunt CLI..."
     npm update -g grunt-cli &>/dev/null
     npm update -g grunt-sass &>/dev/null
     npm update -g grunt-cssjanus &>/dev/null
     npm update -g grunt-rtlcss &>/dev/null
   else
-    echo "Installing Grunt CLI"
+    echo "Installing Grunt CLI..."
     npm install -g grunt-cli &>/dev/null
     npm install -g grunt-sass &>/dev/null
     npm install -g grunt-cssjanus &>/dev/null
@@ -297,59 +338,135 @@ tools_install() {
 
 apache_setup() {
   # Used to to ensure proper services are started on `vagrant up`
-  sudo rsync -rvzh /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
+  rsync -rvzh /srv/config/init/vvv-start.conf /etc/init/vvv-start.conf
 
   echo " * /srv/config/init/vvv-start.conf                -> /etc/init/vvv-start.conf"
 
+  # If a custom httpd.conf file is not found, create an empty one
+  if [[ ! -f "/srv/config/apache-config/httpd.conf" ]]; then
+    touch "/srv/config/apache-config/httpd.conf"
+  fi
+
   # Copy Apache configuration from local
-  sudo rsync -rvzh "/srv/config/apache-config/apache2.conf" "/etc/apache2/apache2.conf"
-  sudo rsync -rvzh "/srv/config/apache-config/httpd.conf" "/etc/apache2/httpd.conf"
-  sudo rsync -rvzh "/srv/config/apache-config/php5-fpm.conf" "/etc/apache2/conf-enabled/php5-fpm.conf"
-  sudo rsync -rvzh --delete "/srv/config/apache-config/sites/" "/etc/apache2/custom-sites/"
+  rsync -rvzh "/srv/config/apache-config/apache2.conf" "/etc/apache2/apache2.conf"
+  rsync -rvzh "/srv/config/apache-config/httpd.conf" "/etc/apache2/httpd.conf"
+  rsync -rvzh --delete "/srv/config/apache-config/sites/" "/etc/apache2/custom-sites/"
 
   echo " * /srv/config/apache-config/apache2.conf         -> /etc/apache2/apache2.conf"
   echo " * /srv/config/apache-config/httpd.conf           -> /etc/apache2/httpd.conf"
-  echo " * /srv/config/apache-config/php5-fpm.conf        -> /etc/apache2/conf-enabled/php5-fpm.conf"
   echo " * /srv/config/apache-config/sites/               -> /etc/apache2/custom-sites/"
 
-  # Configure Apache for PHP-FPM
-  sudo a2enmod actions fastcgi alias
-
-  # Create php5.fcgi and give the webserver permission to use it
-  sudo touch /usr/lib/cgi-bin/php5.fcgi
-  sudo chown -R vagrant:www-data /usr/lib/cgi-bin
-
-  # Enable the php5-fpm conf
-  sudo a2enconf php5-fpm
+  # Configure Apache
+  a2enmod actions fastcgi alias
 
   # Enable mod_rewrite
   a2enmod rewrite
+
+  # Allow phpbrew to access apache files
+  chmod -R oga+rw /usr/lib/apache2/modules
+  chmod -R oga+rw /etc/apache2
 }
 
-phpfpm_setup() {
-  sudo mkdir -p "/etc/php5/fpm/pool.d" "/etc/php5/fpm/conf.d/"
+php_setup() {
+  # Make sure these directories exist
+  mkdir -p "/etc/php5/apache2/conf.d/"
 
-  # Copy php-fpm configuration from local
-  sudo rsync -rvzh "/srv/config/php5-fpm-config/php5-fpm.conf" "/etc/php5/fpm/php5-fpm.conf"
-  sudo rsync -rvzh "/srv/config/php5-fpm-config/www.conf" "/etc/php5/fpm/pool.d/www.conf"
-  sudo rsync -rvzh "/srv/config/php5-fpm-config/php-custom.ini" "/etc/php5/fpm/conf.d/php-custom.ini"
-  sudo rsync -rvzh "/srv/config/php5-fpm-config/opcache.ini" "/etc/php5/fpm/conf.d/opcache.ini"
-  sudo rsync -rvzh "/srv/config/php5-fpm-config/xdebug.ini" "/etc/php5/mods-available/xdebug.ini"
+  # Copy php configuration from local
+  rsync -rvzh "/srv/config/php5-config/php-custom.ini" "/etc/php5/apache2/conf.d/php-custom.ini"
+  rsync -rvzh "/srv/config/php5-config/opcache.ini" "/etc/php5/apache2/conf.d/opcache.ini"
+  rsync -rvzh "/srv/config/php5-config/xdebug.ini" "/etc/php5/mods-available/xdebug.ini"
 
   # Find the path to Xdebug and prepend it to xdebug.ini
-  XDEBUG_PATH=$( find /usr -name 'xdebug.so' | head -1 )
+  XDEBUG_PATH=$(find /usr -name 'xdebug.so' | head -1)
   sed -i "1izend_extension=\"$XDEBUG_PATH\"" "/etc/php5/mods-available/xdebug.ini"
 
-  echo " * /srv/config/php5-fpm-config/php5-fpm.conf       -> /etc/php5/fpm/php5-fpm.conf"
-  echo " * /srv/config/php5-fpm-config/www.conf            -> /etc/php5/fpm/pool.d/www.conf"
-  echo " * /srv/config/php5-fpm-config/php-custom.ini      -> /etc/php5/fpm/conf.d/php-custom.ini"
-  echo " * /srv/config/php5-fpm-config/opcache.ini         -> /etc/php5/fpm/conf.d/opcache.ini"
-  echo " * /srv/config/php5-fpm-config/xdebug.ini          -> /etc/php5/mods-available/xdebug.ini"
+  echo " * /srv/config/php5-config/php-custom.ini         -> /etc/php5/apache2/conf.d/php-custom.ini"
+  echo " * /srv/config/php5-config/opcache.ini            -> /etc/php5/apache2/conf.d/opcache.ini"
+  echo " * /srv/config/php5-config/xdebug.ini             -> /etc/php5/mods-available/xdebug.ini"
 
   # Copy memcached configuration from local
-  sudo rsync -rvzh "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
+  rsync -rvzh "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
+  echo " * /srv/config/memcached-config/memcached.conf    -> /etc/memcached.conf"
 
-  echo " * /srv/config/memcached-config/memcached.conf     -> /etc/memcached.conf"
+  # phpbrew
+  #
+  # Install or update phpbrew based on current state.
+  if [[ "$(phpbrew --version)" ]]; then
+    # Update as vagrant user
+    echo "Updating phpbrew..."
+    sudo -i -u vagrant phpbrew self-update
+  else
+    echo "Installing phpbrew..."
+    curl -L -O "https://github.com/phpbrew/phpbrew/raw/master/phpbrew"
+    chmod +x "phpbrew"
+    mv "phpbrew" "/usr/local/bin/phpbrew"
+    # Initialize as vagrant user
+    echo "Initializing phpbrew..."
+    sudo -i -u vagrant phpbrew init
+  fi
+
+  # php-switch
+  #
+  # Install php-switch helper.
+  if [[ ! -f "/usr/local/bin/php-switch" ]]; then
+    echo "Installing php-switch..."
+    cat > /usr/local/bin/php-switch <<'EOT'
+#!/usr/bin/env bash
+VERSION="$1"
+SOFILE="/usr/lib/apache2/modules/libphp$VERSION.so"
+CONFFILE="/etc/apache2/mods-available/php5.load"
+sudo -i -u vagrant source ~vagrant/.phpbrew/bashrc
+
+if [[ -z "$VERSION" ]]; then
+  echo "No PHP version specified"
+  sudo -i -u vagrant phpbrew list
+  exit 1
+fi
+
+if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "Invalid PHP version: $VERSION (should be x.x.x)"
+  sudo -i -u vagrant phpbrew known
+  exit 1
+fi
+
+if [[ ! "$VERSION" =~ ^5 ]]; then
+  echo "Right now, only PHP version 5.x is supported."
+  echo "Do you know how to configure PHP 7.x (or older versions of PHP) using phpbrew?"
+  echo "Help out by submitting a pull request!"
+  echo " * https://github.com/ezekg/theme-juice-vvv"
+  exit 1
+fi
+
+if [[ ! -f "$SOFILE" ]]; then
+  echo "PHP version $VERSION is not installed"
+
+  if [[ "${@: -1}" =~ ^-y$ ]]; then
+    REPLY=y
+  else
+    read -p "Do you want to install it? (y/N) " -r
+  fi
+
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    sudo -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-config-file-scan-dir=/etc/php5/apache2/conf.d/
+  else
+    exit 1
+  fi
+fi
+
+echo "Switching PHP version to $VERSION..."
+sudo -i -u vagrant phpbrew switch "$VERSION"
+
+echo "Updating contents of $SOFILE to point to PHP version $VERSION..."
+FILECONTENTS="LoadModule php5_module $SOFILE"
+echo "$FILECONTENTS" > "$CONFFILE"
+
+echo "Restarting Apache..."
+sudo service apache2 restart
+EOT
+    chmod +x "/usr/local/bin/php-switch"
+  fi
+
+  sudo -i -u vagrant source ~vagrant/.phpbrew/bashrc
 }
 
 mysql_setup() {
@@ -361,8 +478,8 @@ mysql_setup() {
     echo -e "\nSetup MySQL configuration file links..."
 
     # Copy mysql configuration from local
-    sudo rsync -rvzh "/srv/config/mysql-config/my.cnf" "/etc/mysql/my.cnf"
-    sudo rsync -rvzh "/srv/config/mysql-config/root-my.cnf" "/home/vagrant/.my.cnf"
+    rsync -rvzh "/srv/config/mysql-config/my.cnf" "/etc/mysql/my.cnf"
+    rsync -rvzh "/srv/config/mysql-config/root-my.cnf" "/home/vagrant/.my.cnf"
 
     echo " * /srv/config/mysql-config/my.cnf                 -> /etc/mysql/my.cnf"
     echo " * /srv/config/mysql-config/root-my.cnf            -> /home/vagrant/.my.cnf"
@@ -423,7 +540,7 @@ mailcatcher_setup() {
     gpg -q --no-tty --batch --keyserver "hkp://keyserver.ubuntu.com:80" --recv-keys BF04FF17
 
     printf " * RVM [not installed]\n Installing from source"
-    curl --silent -L "https://get.rvm.io" | sudo bash -s stable --ruby
+    curl --silent -L "https://get.rvm.io" | bash -s stable --ruby
     source "/usr/local/rvm/scripts/rvm"
   fi
 
@@ -443,15 +560,15 @@ mailcatcher_setup() {
   if [[ -f "/etc/init/mailcatcher.conf" ]]; then
     echo " *" Mailcatcher upstart already configured.
   else
-    sudo rsync -rvzh "/srv/config/init/mailcatcher.conf"  "/etc/init/mailcatcher.conf"
+    rsync -rvzh "/srv/config/init/mailcatcher.conf"  "/etc/init/mailcatcher.conf"
     echo " * /srv/config/init/mailcatcher.conf               -> /etc/init/mailcatcher.conf"
   fi
 
   if [[ -f "/etc/php5/mods-available/mailcatcher.ini" ]]; then
-    echo " * Mailcatcher php5 fpm already configured."
+    echo " * Mailcatcher php already configured."
   else
-    sudo rsync -rvzh "/srv/config/php5-fpm-config/mailcatcher.ini" "/etc/php5/mods-available/mailcatcher.ini"
-    echo " * /srv/config/php5-fpm-config/mailcatcher.ini     -> /etc/php5/mods-available/mailcatcher.ini"
+    rsync -rvzh "/srv/config/php5-config/mailcatcher.ini" "/etc/php5/mods-available/mailcatcher.ini"
+    echo " * /srv/config/php5-config/mailcatcher.ini     -> /etc/php5/mods-available/mailcatcher.ini"
   fi
 }
 
@@ -460,17 +577,17 @@ services_restart() {
   #
   # Add the vagrant user to the www-data group so that it has better access
   # to PHP and Apache related files
-  sudo usermod -a -G www-data vagrant
-  sudo chown -R vagrant:www-data /tmp
-  sudo sed -i 's/APACHE_RUN_USER=www-data/APACHE_RUN_USER=vagrant/' /etc/apache2/envvars
-  sudo chown -R vagrant:www-data /var/lock/apache2/
-  sudo chown -R vagrant:www-data /var/lib/apache2/
+  usermod -a -G www-data vagrant
+  chown -R vagrant:www-data /tmp
+  sed -i 's/APACHE_RUN_USER=www-data/APACHE_RUN_USER=vagrant/' /etc/apache2/envvars
+  chown -R vagrant:www-data /var/lock/apache2/
+  chown -R vagrant:www-data /var/lib/apache2/
 
   # Make sure the services we expect to be running are running.
   echo -e "\nRestart services..."
-  sudo a2enmod headers && sudo service apache2 restart
-  sudo service memcached restart
-  sudo service mailcatcher restart
+  a2enmod headers && service apache2 restart
+  service memcached restart
+  service mailcatcher restart
 
   # Disable PHP Xdebug module by default
   php5dismod xdebug
@@ -480,8 +597,6 @@ services_restart() {
 
   # Enable PHP mailcatcher sendmail settings by default
   php5enmod mailcatcher
-
-  sudo service php5-fpm restart
 }
 
 wp_cli() {
@@ -555,11 +670,11 @@ phpmyadmin_setup() {
   else
     echo "PHPMyAdmin already installed."
   fi
-  sudo rsync -rvzh "/srv/config/phpmyadmin-config/config.inc.php" "/srv/www/default/database-admin/"
+  rsync -rvzh "/srv/config/phpmyadmin-config/config.inc.php" "/srv/www/default/database-admin/"
   echo " * /srv/config/phpmyadmin-config/config.inc.php    -> /srv/www/default/database-admin/"
 }
 
-custom_vvv(){
+custom_vvv() {
   # Find new sites to setup.
   # Kill previously symlinked Apache configs
   # We can't know what sites have been removed, so we have to remove all
@@ -628,7 +743,7 @@ package_install
 tools_install
 apache_setup
 mailcatcher_setup
-phpfpm_setup
+php_setup
 services_restart
 mysql_setup
 

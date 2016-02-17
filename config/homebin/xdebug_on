@@ -1,4 +1,2 @@
 #!/bin/bash
 sudo php5enmod xdebug
-sudo service php5-fpm restart
-
