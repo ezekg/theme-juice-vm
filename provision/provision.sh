@@ -458,7 +458,7 @@ if [[ ! -f "$SOFILE" ]]; then
 fi
 
 sudo -E su vagrant <<END
-  source ~/.phpbrew/bashrc
+  source ~vagrant/.phpbrew/bashrc
 
   echo "Switching PHP version to $VERSION..."
   phpbrew switch "$VERSION"
