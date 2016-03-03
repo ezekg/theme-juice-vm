@@ -44,6 +44,7 @@ apt_package_check_list=(
 	php-pear
 	php5-gd
 	php-apc
+  php5-cgi
 
   # Dependencies for building PHP versions with phpbrew
   autoconf
