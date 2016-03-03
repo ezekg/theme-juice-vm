@@ -25,25 +25,25 @@ apt_package_install_list=()
 # status before adding them to the apt_package_install_list array.
 apt_package_check_list=(
 
-	# Our base packages for php5
+  # Our base packages for php5
   php5
-	php5-cli
+  php5-cli
 
-	# Common and dev packages for php
-	php5-common
-	php5-dev
+  # Common and dev packages for php
+  php5-common
+  php5-dev
 
-	# Extra PHP modules that we find useful
-	php5-memcache
-	php5-imagick
-	php5-xdebug
-	php5-mcrypt
-	php5-mysql
-	php5-imap
-	php5-curl
-	php-pear
-	php5-gd
-	php-apc
+  # Extra PHP modules that we find useful
+  php5-memcache
+  php5-imagick
+  php5-xdebug
+  php5-mcrypt
+  php5-mysql
+  php5-imap
+  php5-curl
+  php-pear
+  php5-gd
+  php-apc
   php5-cgi
 
   # Dependencies for building PHP versions with phpbrew
