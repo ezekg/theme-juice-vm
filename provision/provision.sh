@@ -468,6 +468,7 @@ sudo -E su vagrant <<END
   phpbrew ext install openssl || echo "Failed to install openssl"
   phpbrew ext install memcache || echo "Failed to install memcache"
   phpbrew ext install imagick || echo "Failed to install imagick"
+  phpbrew ext install iconv || echo "Failed to install iconv"
   phpbrew ext install xdebug && phpbrew ext disable xdebug || echo "Failed to install xdebug"
 END
 
