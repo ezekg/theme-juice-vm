@@ -16,9 +16,6 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--cpus", 1]
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-
-    # Set the box name in VirtualBox to match the working directory.
-    v.name = File.basename(dir)
   end
 
   # SSH Agent Forwarding
