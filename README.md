@@ -82,7 +82,7 @@ on the next provision. For example, a virtual host that looks like this,
 </VirtualHost>
 ```
 
-will automatically get a generated certificate on a provision. Once a site has a
+will automatically get a generated certificate when provisioned. Once a site has a
 certificate, another one will not be generated until the old one is removed.
 
 #### Accepting a self-signed SSL cert
