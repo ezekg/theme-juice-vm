@@ -62,6 +62,42 @@ _Currently, this feature is limited to **only** PHP `5.x`. I haven't been able
 to find a way to consistently configure other versions with Apache/MySQL. If
 you have the chops, I'd love the help._
 
+### Automatically generated self-signed SSL certs
+When a `conf` file within `config/apache-config/sites/` contains a virtual host with
+a `*:443` port number, a self-signed SSL certificate will automatically be generated
+on the next provision. For example, a virtual host that looks like this,
+
+```apache
+<VirtualHost *:80>
+  DocumentRoot /srv/www/tj-example
+  ServerName example.dev
+</VirtualHost>
+
+<VirtualHost *:443>
+  DocumentRoot /srv/www/example
+  ServerName example.dev
+  SSLEngine on
+  SSLCertificateFile "/etc/ssl/certs/example.dev.pem"
+  SSLCertificateKeyFile "/etc/ssl/private/example.dev.key"
+</VirtualHost>
+```
+
+will automatically get a generated certificate on a provision. Once a site has a
+certificate, another one will not be generated until the old one is removed.
+
+#### Accepting a self-signed SSL cert
+
+##### OS X Instructions
+Since it's a little unintuitive, I'll link you off [to this great tutorial on accepting a self-signed cert](https://www.accuweaver.com/2014/09/19/make-chrome-accept-a-self-signed-certificate-on-osx/).
+
+You may need to restart your browser to see this change take effect.
+
+##### Windows Instructions
+Know how? Create a pull request!
+
+##### Linux Instructions
+Know how? Create a pull request!
+
 ### Credentials and Such
 | Program | User   | Pass   | Dashboard                                                        |
 | :------ | :----- | :----- | :--------------------------------------------------------------- |

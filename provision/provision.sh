@@ -359,11 +359,19 @@ apache_setup() {
   echo " * /srv/config/apache-config/httpd.conf           -> /etc/apache2/httpd.conf"
   echo " * /srv/config/apache-config/sites/               -> /etc/apache2/custom-sites/"
 
+  echo " "
+  echo "Installing/configuring SSL certs"
+  ssl_cert_setup
+
   # Configure Apache
   a2enmod actions fastcgi alias
 
   # Enable mod_rewrite
   a2enmod rewrite
+
+  # Enable SSL
+  a2enmod ssl
+  a2ensite default-ssl.conf
 
   # Allow phpbrew to access apache files
   chmod -R oga+rw /usr/lib/apache2/modules
@@ -745,6 +753,48 @@ custom_vvv() {
   done
 }
 
+xo_install() {
+  # Install xo
+  if [[ ! -f "/usr/local/bin/xo" ]]; then
+    echo "Installing xo (https://github.com/ezekg/xo)"
+    curl -L https://github.com/ezekg/xo/releases/download/0.2.2/xo_0.2.2_linux_amd64.tar.gz -O
+    tar -xvzf xo_0.2.2_linux_amd64.tar.gz
+    chmod +x xo_0.2.2_linux_amd64/xo
+    mv xo_0.2.2_linux_amd64/xo /usr/local/bin/
+    rm -rf xo_0.2.2_linux_amd64
+  fi
+}
+
+ssl_cert_setup() {
+  echo "Adding self-signed SSL certs"
+  sites=$(cat /etc/apache2/custom-sites/*.conf | xo '/\*:443.*?ServerName\s([-.0-9A-Za-z]+)/$1/mis')
+
+  # Install a cert for each domain
+  for site in $sites; do
+    if [[ $site =~ "localhost" ]] || [[ ! $site =~ ".dev" ]]; then
+      continue
+    fi
+
+    domain=$(echo "$site" | sed "s/^www.//")
+
+    if [[ -f "/etc/ssl/certs/$domain.pem" ]]; then
+      echo " * Cert for $domain already exists"
+      continue
+    fi
+
+    openssl genrsa -des3 -passout pass:x -out "$domain.pass.key" 2048 &>/dev/null
+    openssl rsa -passin pass:x -in "$domain.pass.key" -out "$domain.key" &>/dev/null
+    rm "$domain.pass.key"
+    openssl req -new -key "$domain.key" -out "$domain.csr" -subj "/C=US/ST=New York/L=New York City/O=Evil Corp/OU=IT Department/CN=$domain" &>/dev/null
+    openssl x509 -req -days 365 -in "$domain.csr" -signkey "$domain.key" -out "$domain.pem" &>/dev/null
+
+    mv "$domain.key" /etc/ssl/private/
+    mv "$domain.pem" /etc/ssl/certs/
+
+    echo " * Created cert for $domain"
+  done
+}
+
 ### SCRIPT
 #set -xv
 
@@ -758,9 +808,12 @@ network_check
 
 # Package and Tools Install
 echo " "
-echo "Main packages check and install."
+echo "Tool packages check and install."
 package_install
 tools_install
+xo_install
+
+echo "Main packages check and install."
 apache_setup
 mailcatcher_setup
 php_setup

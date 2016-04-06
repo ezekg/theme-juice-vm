@@ -192,7 +192,7 @@
   jQuery(document).ready(function($) {
     $status = $(".status");
     setInterval(function() {
-      $.ajax("http://vvv.dev").done(function() {
+      $.ajax("//vvv.dev").done(function() {
         $status.addClass("status--ok");
       }).fail(function() {
         $status.addClass("status--err");
