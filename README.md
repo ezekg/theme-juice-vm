@@ -74,7 +74,7 @@ on the next provision. For example, a virtual host that looks like this,
 </VirtualHost>
 
 <VirtualHost *:443>
-  DocumentRoot /srv/www/example
+  DocumentRoot /srv/www/tj-example
   ServerName example.dev
   SSLEngine on
   SSLCertificateFile "/etc/ssl/certs/example.dev.pem"
