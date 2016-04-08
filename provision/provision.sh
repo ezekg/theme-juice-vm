@@ -460,7 +460,7 @@ if [[ ! -f "$SOFILE" ]]; then
 
   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     echo "Installing PHP version $VERSION..."
-    sudo -E -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-config-file-scan-dir=/etc/php5/apache2/custom-conf.d/
+    sudo -E -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +iconv +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-config-file-scan-dir=/etc/php5/apache2/custom-conf.d/
   else
     exit 0
   fi
@@ -476,7 +476,6 @@ sudo -E su vagrant <<END
   phpbrew ext install openssl || echo "Failed to install openssl"
   phpbrew ext install memcache || echo "Failed to install memcache"
   phpbrew ext install imagick || echo "Failed to install imagick"
-  phpbrew ext install iconv || echo "Failed to install iconv"
   phpbrew ext install xdebug && phpbrew ext disable xdebug || echo "Failed to install xdebug"
 END
 
