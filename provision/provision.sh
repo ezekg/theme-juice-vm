@@ -403,9 +403,9 @@ php_setup() {
   #
   # Install or update phpbrew based on current state.
   if [[ "$(phpbrew --version)" ]]; then
-    # Update as vagrant user
+    # Update as root user
     echo "Updating phpbrew..."
-    sudo -i -u vagrant phpbrew self-update
+    phpbrew self-update
   else
     echo "Installing phpbrew..."
     curl -L -O "https://github.com/phpbrew/phpbrew/raw/master/phpbrew"
