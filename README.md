@@ -9,7 +9,18 @@ environments". It works with [virtualization](http://en.wikipedia.org/wiki/X86_v
 software such as [VirtualBox](https://www.virtualbox.org/) to provide a virtual machine
 that is sandboxed away from your local environment.
 
-### What do you get?
+### Installation
+You can either use [`tj`](https://github.com/ezekg/theme-juice-cli) to set up your
+development environment, or run the commands below from whatever directory you
+want the VM installed:
+
+```bash
+# First, cd to where you want to install the VM, then run...
+git clone https://github.com/ezekg/theme-juice-vvv .
+vagrant up
+```
+
+## What do you get?
 | Name                                                             | Version   | Description                                                                                                                                                                                                            |
 | :--------------------------------------------------------------- | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Ubuntu](http://www.ubuntu.com/)                                 | `14.04.3` | Ubuntu is a Debian-based Linux operating system and distribution for personal computers, smartphones and network servers.                                                                                              |
@@ -32,11 +43,11 @@ that is sandboxed away from your local environment.
 | [npm](https://www.npmjs.com/)                                    | `stable`  | npm is a dependency manager for Node.js.                                                                                                                                                                               |
 | [Grunt](http://gruntjs.com/)                                     | `stable`  | Grunt is a task runner for JavaScript.                                                                                                                                                                                 |
 
-### Dashboard
+## Dashboard
 You can view things such as a PHP `phpinfo()` dump, phpMemcachedAdmin, phpMyAdmin,
 Webgrind and more through the [main dashboard](http://vvv.dev/).
 
-### Switching PHP versions
+## Switching PHP versions
 Create a new file called `provision/provision-post.sh` and add the PHP version
 you would like to use, making sure it contains all 3 parts (i.e. `x.x.x`). See
 the following example:
@@ -62,7 +73,7 @@ _Currently, this feature is limited to **only** PHP `5.x`. I haven't been able
 to find a way to consistently configure other versions with Apache/MySQL. If
 you have the chops, I'd love the help._
 
-### Automatically generated self-signed SSL certs
+## Automatically generated self-signed SSL certs
 When a `conf` file within `config/apache-config/sites/` contains a virtual host with
 a `*:443` port number, a self-signed SSL certificate will automatically be generated
 on the next provision. For example, a virtual host that looks like this,
@@ -85,24 +96,24 @@ on the next provision. For example, a virtual host that looks like this,
 will automatically get a generated certificate when provisioned. Once a site has a
 certificate, another one will not be generated until the old one is removed.
 
-#### Accepting a self-signed SSL cert
+### Accepting a self-signed SSL cert
 
-##### OS X Instructions
+#### OS X Instructions
 Since it's a little unintuitive, I'll link you off [to this great tutorial on accepting a self-signed cert](https://www.accuweaver.com/2014/09/19/make-chrome-accept-a-self-signed-certificate-on-osx/).
 
 You may need to restart your browser to see this change take effect.
 
-##### Windows Instructions
+#### Windows Instructions
 Know how? Create a pull request!
 
-##### Linux Instructions
+#### Linux Instructions
 Know how? Create a pull request!
 
-### Credentials and Such
+## Credentials and Such
 | Program | User   | Pass   | Dashboard                                                        |
 | :------ | :----- | :----- | :--------------------------------------------------------------- |
 | MySQL   | `root` | `root` | [http://vvv.dev/database-admin/](http://vvv.dev/database-admin/) |
 
-### Need Help?
+## Need Help?
 * Let us have it! Don't hesitate to open a new issue on GitHub if you run into
   trouble or have any tips that we need to know.
