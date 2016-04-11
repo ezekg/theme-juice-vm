@@ -331,6 +331,17 @@ tools_install() {
     npm install -g grunt-rtlcss &>/dev/null
   fi
 
+  # Bower
+  #
+  # Install or update Bower based on current state.
+  if [[ "$(bower --version)" ]]; then
+    echo "Updating Bower..."
+    npm update -g bower &>/dev/null
+  else
+    echo "Installing Bower..."
+    npm install -g bower &>/dev/null
+  fi
+
   # Graphviz
   #
   # Set up a symlink between the Graphviz path defined in the default Webgrind
