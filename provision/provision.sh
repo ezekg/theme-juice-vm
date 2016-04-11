@@ -557,11 +557,10 @@ mysql_setup() {
   fi
 }
 
-mailcatcher_setup() {
-  # Mailcatcher
+rvm_setup() {
+  # RVM
   #
-  # Installs mailcatcher using RVM. RVM allows us to install the
-  # current version of ruby and all mailcatcher dependencies reliably.
+  # Installs RVM. RVM allows us to install the current version of Ruby.
   local pkg
 
   rvm_version="$(/usr/bin/env rvm --silent --version 2>&1 | grep 'rvm ' | cut -d " " -f 2)"
@@ -581,6 +580,17 @@ mailcatcher_setup() {
     curl --silent -L "https://get.rvm.io" | bash -s stable --ruby
     source "/usr/local/rvm/scripts/rvm"
   fi
+
+  # Install bundler gem
+  gem install bundler
+}
+
+mailcatcher_setup() {
+  # Mailcatcher
+  #
+  # Installs mailcatcher using RVM. RVM allows us to install all mailcatcher
+  # dependencies reliably.
+  local pkg
 
   mailcatcher_version="$(/usr/bin/env mailcatcher --version 2>&1 | grep 'mailcatcher ' | cut -d " " -f 2)"
   if [[ -n "${mailcatcher_version}" ]]; then
@@ -825,6 +835,7 @@ xo_install
 
 echo "Main packages check and install."
 apache_setup
+rvm_setup
 mailcatcher_setup
 php_setup
 services_restart
