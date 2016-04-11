@@ -766,7 +766,7 @@ xo_install() {
 
 ssl_cert_setup() {
   echo "Adding self-signed SSL certs"
-  sites=$(cat /etc/apache2/custom-sites/*.conf | xo '/\*:443.*?ServerName\s([-.0-9A-Za-z]+)/$1/mis')
+  sites=$(cat /etc/apache2/custom-sites/*.conf | xo '/\*:443.*?ServerName\s(www)?\.?([-.0-9A-Za-z]+)/$1?:www.$2/mis')
 
   # Install a cert for each domain
   for site in $sites; do
