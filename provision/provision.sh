@@ -790,11 +790,12 @@ xo_install() {
   # Install xo
   if [[ ! -f "/usr/local/bin/xo" ]]; then
     echo "Installing xo (https://github.com/ezekg/xo)"
-    curl -L https://github.com/ezekg/xo/releases/download/0.2.2/xo_0.2.2_linux_amd64.tar.gz -O
+    curl -L -O https://github.com/ezekg/xo/releases/download/0.2.2/xo_0.2.2_linux_amd64.tar.gz
     tar -xvzf xo_0.2.2_linux_amd64.tar.gz
+    rm xo_0.2.2_linux_amd64.tar.gz
     chmod +x xo_0.2.2_linux_amd64/xo
     mv xo_0.2.2_linux_amd64/xo /usr/local/bin/
-    rm -rf xo_0.2.2_linux_amd64
+    rm -rf xo_0.2.2_linux_amd64&
   fi
 }
 
@@ -823,6 +824,7 @@ ssl_cert_setup() {
 
     mv "$domain.key" /etc/ssl/private/
     mv "$domain.pem" /etc/ssl/certs/
+    rm "$domain.csr"
 
     echo " * Created cert for $domain"
   done
