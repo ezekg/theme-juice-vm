@@ -248,13 +248,13 @@ package_install() {
   fi
 }
 
-tools_install() {
+tools_setup() {
 
   # npm
   #
   # Make sure we have the latest npm version and the update checker module
-  npm install -g npm
-  npm install -g npm-check-updates
+  sudo -i -u vagrant npm install -g npm
+  sudo -i -u vagrant npm install -g npm-check-updates
 
   # xdebug
   #
@@ -308,16 +308,16 @@ tools_install() {
   # Install or update Grunt based on current state.
   if [[ "$(grunt --version)" ]]; then
     echo "Updating Grunt CLI..."
-    npm update -g grunt-cli &>/dev/null
-    npm update -g grunt-sass &>/dev/null
-    npm update -g grunt-cssjanus &>/dev/null
-    npm update -g grunt-rtlcss &>/dev/null
+    sudo -i -u vagrant npm update -g grunt-cli &>/dev/null
+    sudo -i -u vagrant npm update -g grunt-sass &>/dev/null
+    sudo -i -u vagrant npm update -g grunt-cssjanus &>/dev/null
+    sudo -i -u vagrant npm update -g grunt-rtlcss &>/dev/null
   else
     echo "Installing Grunt CLI..."
-    npm install -g grunt-cli &>/dev/null
-    npm install -g grunt-sass &>/dev/null
-    npm install -g grunt-cssjanus &>/dev/null
-    npm install -g grunt-rtlcss &>/dev/null
+    sudo -i -u vagrant npm install -g grunt-cli &>/dev/null
+    sudo -i -u vagrant npm install -g grunt-sass &>/dev/null
+    sudo -i -u vagrant npm install -g grunt-cssjanus &>/dev/null
+    sudo -i -u vagrant npm install -g grunt-rtlcss &>/dev/null
   fi
 
   # Bower
@@ -325,10 +325,10 @@ tools_install() {
   # Install or update Bower based on current state.
   if [[ "$(bower --version)" ]]; then
     echo "Updating Bower..."
-    npm update -g bower &>/dev/null
+    sudo -i -u vagrant npm update -g bower &>/dev/null
   else
     echo "Installing Bower..."
-    npm install -g bower &>/dev/null
+    sudo -i -u vagrant npm install -g bower &>/dev/null
   fi
 
   # Graphviz
@@ -849,7 +849,7 @@ package_install
 echo "Tool packages check and install"
 xo_install
 node_setup
-tools_install
+tools_setup
 apache_setup
 rvm_setup
 mailcatcher_setup
