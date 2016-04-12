@@ -124,11 +124,6 @@ apt_package_check_list=(
   # trouble with in Linux.
   dos2unix
 
-  # Nodejs for use by grunt
-  g++
-  nodejs
-  npm
-
   # Mailcatcher dependency
   libsqlite3-dev
 )
@@ -308,12 +303,6 @@ tools_install() {
     COMPOSER_HOME=/usr/local/src/composer composer global update
   fi
 
-  # node
-  #
-  # Create a symlink for nodejs->node.
-  echo "Adding node symlink..."
-  ln -sf "$(which nodejs)" "/usr/local/bin/node"
-
   # Grunt
   #
   # Install or update Grunt based on current state.
@@ -348,6 +337,30 @@ tools_install() {
   # config and actual path.
   echo "Adding graphviz symlink for Webgrind..."
   ln -sf "/usr/bin/dot" "/usr/local/bin/dot"
+}
+
+node_setup() {
+  # NVM
+  #
+  # Installs NVM. NVM allows us to install the current version of Node.
+  if [[ "$(nvm --version)" ]]; then
+    echo "Updating NVM"
+  else
+    echo "Installing NVM from source"
+    echo -e "\n[[ -e ~/.nvm/nvm.sh ]] && source ~/.nvm/nvm.sh" >> ~vagrant/.bash_profile
+  fi
+
+  # Installing and updating are handled within the install script
+  curl -L -O https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh
+  sudo -i -u vagrant bash install.sh
+  rm install.sh
+
+  source "~vagrant/.nvm/nvm.sh"
+
+  # Install Node stable
+  echo "Installing Node stable"
+  sudo -i -u vagrant nvm install node
+  sudo -i -u vagrant nvm alias default node
 }
 
 apache_setup() {
@@ -821,19 +834,20 @@ ssl_cert_setup() {
 network_check
 
 # Profile_setup
-echo "Bash profile setup and directories."
+echo "Bash profile setup and directories"
 profile_setup
 
 network_check
 
 # Package and Tools Install
 echo " "
-echo "Tool packages check and install."
+echo "Main packages check and install"
 package_install
-tools_install
-xo_install
 
-echo "Main packages check and install."
+echo "Tool packages check and install"
+xo_install
+node_setup
+tools_install
 apache_setup
 rvm_setup
 mailcatcher_setup
