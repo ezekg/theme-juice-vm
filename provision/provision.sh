@@ -331,6 +331,17 @@ tools_setup() {
     sudo -i -u vagrant npm install -g bower &>/dev/null
   fi
 
+  # Sympm
+  #
+  # Install or update Sympm based on current state.
+  if [[ "$(sympm --version)" ]]; then
+    echo "Updating Sympm..."
+    sudo -i -u vagrant npm update -g sympm &>/dev/null
+  else
+    echo "Installing Sympm..."
+    sudo -i -u vagrant npm install -g sympm &>/dev/null
+  fi
+
   # Graphviz
   #
   # Set up a symlink between the Graphviz path defined in the default Webgrind
