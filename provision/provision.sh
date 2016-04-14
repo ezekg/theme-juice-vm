@@ -309,15 +309,9 @@ tools_setup() {
   if [[ "$(grunt --version)" ]]; then
     echo "Updating Grunt CLI..."
     sudo -i -u vagrant npm update -g grunt-cli &>/dev/null
-    sudo -i -u vagrant npm update -g grunt-sass &>/dev/null
-    sudo -i -u vagrant npm update -g grunt-cssjanus &>/dev/null
-    sudo -i -u vagrant npm update -g grunt-rtlcss &>/dev/null
   else
     echo "Installing Grunt CLI..."
     sudo -i -u vagrant npm install -g grunt-cli &>/dev/null
-    sudo -i -u vagrant npm install -g grunt-sass &>/dev/null
-    sudo -i -u vagrant npm install -g grunt-cssjanus &>/dev/null
-    sudo -i -u vagrant npm install -g grunt-rtlcss &>/dev/null
   fi
 
   # Bower
