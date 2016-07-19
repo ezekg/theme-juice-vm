@@ -48,3 +48,6 @@
 # Web directories are important to share.
 !/www/default/phpinfo/index.php
 !/www/default/index.php
+
+# Packaged Vagrant box
+*.box
