@@ -119,9 +119,6 @@ apt_package_check_list=(
 
 # Loop through each of our packages that should be installed on the system. If
 # not yet installed, it should be added to the array of packages to install.
-local pkg
-local package_version
-
 for pkg in "${apt_package_check_list[@]}"; do
   package_version=$(dpkg -s "${pkg}" 2>&1 | grep 'Version:' | cut -d " " -f 2)
   if [[ -n "${package_version}" ]]; then

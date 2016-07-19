@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Installs RVM. RVM allows us to install the current version of Ruby.
-local pkg
-
 rvm_version="$(/usr/bin/env rvm --silent --version 2>&1 | grep 'rvm ' | cut -d " " -f 2)"
 if [[ -n "${rvm_version}" ]]; then
   pkg="RVM"
