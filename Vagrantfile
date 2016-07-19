@@ -146,7 +146,7 @@ Vagrant.configure "2" do |config|
   }
 
   # Custom provisioning scripts
-  Dir[File.join("scripts", "custom", "*")].each do |script|
+  Dir[File.join("scripts", "custom", "*.sh")].each do |script|
     config.vm.provision :shell, :path => script
   end
 
