@@ -18,7 +18,7 @@ echo " * /srv/config/php5-config/xdebug.ini -> /etc/php5/apache2/custom-conf.d/x
 
 # Copy memcached configuration from local
 rsync -rvzh "/srv/config/memcached-config/memcached.conf" "/etc/memcached.conf"
-echo " * /srv/config/memcached-config/memcached.conf    -> /etc/memcached.conf"
+echo " * /srv/config/memcached-config/memcached.conf -> /etc/memcached.conf"
 
 # phpbrew
 #
