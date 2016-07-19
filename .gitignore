@@ -1,22 +1,20 @@
-# Stuff that pops up locally for me - @jeremyfelt
 *.sublime*
 .DS_Store
 .idea
 
-# Because this really is a working directory, ignore vagrant's files
+# Because this really is a working directory, ignore Vagrant's files
 /.vagrant
 
 # Log files
 /log/*.log
 /*.log
 
-# This is a file intended for hooking in a custom Vagrant configuration on up
+# This is a file intended for hooking into the Vagrant configuration
 /Customfile
 
 # Allow for custom provisioning scripts that are not included with the repo
-/provision/provision-custom.sh
-/provision/provision-pre.sh
-/provision/provision-post.sh
+/scripts/custom/*
+!/scripts/custom/.keep
 
 # No need to share individual site configs with each other
 /config/apache-config/sites/*.conf
@@ -24,6 +22,9 @@
 
 # Ignore anything in the 'custom' directory in config
 /config/custom/*
+
+# Ignore custom trigger scripts
+/config/homebin/*_custom
 
 # No need to share our mysql data with each other
 /database/data/*
@@ -35,17 +36,15 @@
 *.sql
 *.sql.gz
 
-# BUT....
-
-# We do have some default site configs that should be included
+# Default site configs that should be included
 !/config/apache-config/sites/default.conf
 
-# And we do have a default SQL file that should be included
+# Default SQL file that should be included
 !/database/init.sql
 
-# And we provide our default host names in a dat file.
-!/www/vvv-hosts
+# Provide our default host names in a dat file.
+!/www/graft-hosts
 
-# And a few of our web directories are important to share.
+# Web directories are important to share.
 !/www/default/phpinfo/index.php
 !/www/default/index.php

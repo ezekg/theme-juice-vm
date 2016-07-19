@@ -1,0 +1,10 @@
+# This file contains a list of the domains supported by default
+# in Graft. Both Vagrantfile and the provisioners parse this
+# file for domains to add to both your host and guest machines
+# as the virtual machines boot.
+#
+# In addition to this file, other files named graft-hosts can
+# be created with additional domain information. These will be
+# automatically parsed as long as they are located in subdirectories
+# of the www/ directory.
+graft.dev
