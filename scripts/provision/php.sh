@@ -43,48 +43,48 @@ fi
 if [[ ! -f "/usr/local/bin/php-switch" ]]; then
   echo "Installing php-switch..."
   cat > /usr/local/bin/php-switch <<'EOT'
-#!/usr/bin/env bash
+#!/bin/bash
 VERSION="$1"
 SOFILE="/usr/lib/apache2/modules/libphp$VERSION.so"
 CONFFILE="/etc/apache2/mods-available/php5.load"
 
 if [[ -z "$VERSION" ]]; then
-echo "No PHP version specified"
-echo "Usage: php-switch <version> [-y]"
-echo "   -y: answer yes to all prompts"
-sudo -E -i -u vagrant phpbrew list
-exit 1
+  echo "No PHP version specified"
+  echo "Usage: php-switch <version> [-y]"
+  echo "   -y: answer yes to all prompts"
+  sudo -E -i -u vagrant phpbrew list
+  exit 1
 fi
 
 if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-echo "Invalid PHP version: $VERSION (should be x.x.x)"
-sudo -E -i -u vagrant phpbrew known
-exit 1
+  echo "Invalid PHP version: $VERSION (should be x.x.x)"
+  sudo -E -i -u vagrant phpbrew known
+  exit 1
 fi
 
 if [[ ! "$VERSION" =~ ^5 ]]; then
-echo "Right now, only PHP version 5.x is supported."
-echo "Do you know how to configure PHP 7.x (or older versions of PHP) using"
-echo "PHPBrew? Help out by submitting a pull request at:"
-echo "https://github.com/themejuice/graft"
-exit 1
+  echo "Right now, only PHP version 5.x is supported."
+  echo "Do you know how to configure PHP 7.x (or older versions of PHP) using"
+  echo "PHPBrew? Help out by submitting a pull request at:"
+  echo "https://github.com/themejuice/graft"
+  exit 1
 fi
 
 if [[ ! -f "$SOFILE" ]]; then
-echo "PHP version $VERSION is not installed"
+  echo "PHP version $VERSION is not installed"
 
-if [[ "${@: -1}" =~ ^-y$ ]]; then
-  REPLY=y
-else
-  read -p "Do you want to install it? (y/N) " -r
-fi
+  if [[ "${@: -1}" =~ ^-y$ ]]; then
+    REPLY=y
+  else
+    read -p "Do you want to install it? (y/N) " -r
+  fi
 
-if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-  echo "Installing PHP version $VERSION..."
-  sudo -E -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +iconv +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-config-file-scan-dir=/etc/php5/apache2/custom-conf.d/
-else
-  exit 0
-fi
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    echo "Installing PHP version $VERSION..."
+    sudo -E -i -u vagrant phpbrew install "php-$VERSION" +default +mysql +debug +iconv +apxs2=/usr/bin/apxs2 -- --with-mysql-sock=/var/run/mysqld/mysqld.sock --with-config-file-scan-dir=/etc/php5/apache2/custom-conf.d/
+  else
+    exit 0
+  fi
 fi
 
 sudo -E su vagrant <<END
@@ -94,19 +94,19 @@ echo "Switching PHP version to $VERSION..."
 phpbrew switch "$VERSION"
 
 echo "Installing PHP extensions for version $VERSION..."
-phpbrew ext install openssl || echo "Failed to install openssl"
-phpbrew ext install memcache || echo "Failed to install memcache"
-phpbrew ext install imagick || echo "Failed to install imagick"
-phpbrew ext install xdebug && phpbrew ext disable xdebug || echo "Failed to install xdebug"
+  phpbrew ext install openssl || echo "Failed to install openssl"
+  phpbrew ext install memcache || echo "Failed to install memcache"
+  phpbrew ext install imagick || echo "Failed to install imagick"
+  phpbrew ext install xdebug && phpbrew ext disable xdebug || echo "Failed to install xdebug"
 END
 
 if [[ -f "$SOFILE" ]]; then
-echo "Updating contents of $CONFFILE to load PHP version $VERSION..."
-echo "LoadModule php5_module $SOFILE" > "$CONFFILE"
-else
-echo "Could not locate $SOFILE"
-echo "Failed to fully install PHP version $VERSION"
-exit 1
+  echo "Updating contents of $CONFFILE to load PHP version $VERSION..."
+  echo "LoadModule php5_module $SOFILE" > "$CONFFILE"
+  else
+  echo "Could not locate $SOFILE"
+  echo "Failed to fully install PHP version $VERSION"
+  exit 1
 fi
 
 echo "Restarting Apache..."
