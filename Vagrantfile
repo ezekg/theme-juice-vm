@@ -99,7 +99,6 @@ Vagrant.configure "2" do |config|
 
   # # Provisioning scripts
   # provision_scripts = %w[
-  #   profile
   #   packages
   #   tools
   #   xo
@@ -122,6 +121,7 @@ Vagrant.configure "2" do |config|
 
   # Startup scripts (always run)
   startup_scripts = %w[
+    profile
     apache
     certs
     services
