@@ -97,28 +97,28 @@ Vagrant.configure "2" do |config|
   customfile = File.join vagrant_dir, "Customfile"
   eval IO.read(customfile), binding if File.exist? customfile
 
-  # Provisioning scripts
-  provision_scripts = %w[
-    profile
-    packages
-    tools
-    xo
-    node
-    rvm
-    mailcatcher
-    php
-    wp
-    memcached
-    opcached
-    webgrind
-    phpmyadmin
-  ]
-  provision_scripts.each do |script|
-    config.vm.provision :shell, {
-      :path => File.join("scripts", "provision", "#{script}.sh"),
-      :name => script
-    }
-  end
+  # # Provisioning scripts
+  # provision_scripts = %w[
+  #   profile
+  #   packages
+  #   tools
+  #   xo
+  #   node
+  #   rvm
+  #   mailcatcher
+  #   php
+  #   wp
+  #   memcached
+  #   opcached
+  #   webgrind
+  #   phpmyadmin
+  # ]
+  # provision_scripts.each do |script|
+  #   config.vm.provision :shell, {
+  #     :path => File.join("scripts", "provision", "#{script}.sh"),
+  #     :name => script
+  #   }
+  # end
 
   # Startup scripts (always run)
   startup_scripts = %w[
