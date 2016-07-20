@@ -101,9 +101,9 @@ Vagrant.configure "2" do |config|
   provision_scripts = %w[
     profile
     packages
+    tools
     xo
     node
-    xo
     rvm
     mailcatcher
     php
