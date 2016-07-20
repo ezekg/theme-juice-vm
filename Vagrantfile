@@ -18,6 +18,7 @@ Vagrant.configure "2" do |config|
   # box containing the Ubuntu 14.04 Trusty 64 bit release. Once this box is downloaded
   # to your host computer, it is cached for future use under the specified box name.
   config.vm.box = "themejuice/graft"
+  config.vm.box_version = "1.0.2"
   config.vm.hostname = "graft.dev"
 
   # If the Vagrant plugin hostsupdater (https://github.com/cogitatio/vagrant-hostsupdater) is
