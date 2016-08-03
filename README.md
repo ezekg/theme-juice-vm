@@ -1,3 +1,8 @@
+# ⚠️ Deprecated ⚠️
+**Attention!** This virtual machine has been deprecated in favor of our brand new, more stable virtual machine, [Graft](https://github.com/ezekg/graft). It uses Chef as a provisioner, and allows for much, much more customization and stablility than this flimsy Bash-provisioned virtual machine. Please upgrade your [`tj`](https://github.com/ezekg/theme-juice-cli) installation and take advantage of the newest features! See [`tj`'s changelog](https://github.com/ezekg/theme-juice-cli/blob/master/CHANGELOG.md) for additional information.
+
+\- Theme Juice Team
+
 # Graft VM
 ![image](https://cloud.githubusercontent.com/assets/6979737/13116898/58565d42-d563-11e5-93c5-619f5991564d.png)
 
